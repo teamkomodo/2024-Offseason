@@ -14,10 +14,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import edu.wpi.first.wpilibj.DigitalInput;
-// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-// import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.util.PIDGains;
+import frc.robot.util.Util;
 
 import static frc.robot.Constants.*;
 
@@ -44,9 +42,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private double shooterMotorPosition = 0;
 
     private final CANSparkMax indexerMotor;
+    private final CANSparkMax indexerMotor2;
     private final SparkPIDController indexerPidController;
     private final RelativeEncoder indexerEncoder;
-    private final CANSparkMax indexerMotor2;
 
     private PIDGains indexerPID = new PIDGains(0.1, 0, 0, 0);
     private double indexerMotorSpeed = 0;
@@ -70,7 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.follow(shooterMotor, true);
         
         shooterPidController = shooterMotor.getPIDController();
-        setPidController(shooterPidController, shooterPID, shooterIZone, shooterFF, shooterMinOutput, shooterMaxOutput);
+        Util.setPidController(shooterPidController, shooterPID, shooterIZone, shooterFF, shooterMinOutput, shooterMaxOutput);
         setShooterMotor(0, ControlType.kDutyCycle);
 
         indexerMotor = new CANSparkMax(INDEXER_MOTOR_1_ID, MotorType.kBrushless);
@@ -86,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
         indexerMotor2.follow(indexerMotor, true);
 
         indexerPidController = indexerMotor.getPIDController();
-        setPidController(indexerPidController, indexerPID);
+        Util.setPidController(indexerPidController, indexerPID);
         setIndexerMotor(0, ControlType.kDutyCycle);
       }
   
@@ -169,19 +167,5 @@ public class ShooterSubsystem extends SubsystemBase {
             indexerMotorPosition = value;
         }
         indexerPidController.setReference(value, type);
-    }
-
-    private void setPidController(SparkPIDController pidController, PIDGains pid) {
-        pidController.setP(pid.p);
-        pidController.setI(pid.i);
-        pidController.setD(pid.d);
-        pidController.setIMaxAccum(pid.maxIAccum, 0);
-    }
-
-    private void setPidController(SparkPIDController pidController, PIDGains pid, double iZone, double FF, double minOutput, double maxOutput) {
-        setPidController(pidController, pid);
-        pidController.setIZone(iZone);
-        pidController.setFF(FF);
-        pidController.setOutputRange(minOutput, maxOutput);
     }
 }
