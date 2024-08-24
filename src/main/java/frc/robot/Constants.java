@@ -34,11 +34,10 @@ public final class Constants {
     //Shooter
     public static final int SHOOTER_MOTOR_1_ID = 4;
     public static final int SHOOTER_MOTOR_2_ID = 3;
-    public static final int INDEXER_MOTOR_1_ID = 11;
-    public static final int INDEXER_MOTOR_2_ID = 14;
 
-    //Constants
-    public static final double INDEXER_SPEED = 0.7;
+    //Intake
+    public static final int INTAKE_MOTOR_ID = -1; //need proper defenition
+    public static final int INTAKE_BEAM_BREAK_PORT = -1; //need proper defenition
 
     //rpm
     public static final double SPEAKER_SPEED = 3000;
