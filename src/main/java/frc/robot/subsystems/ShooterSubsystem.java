@@ -35,8 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final RelativeEncoder shooterEncoder;
     private final CANSparkMax shooterMotor2;
 
-    private PIDGains shooterPID = new PIDGains(1, 0, 0);
-    private double shooterMaxIAccum = 0;
+    private PIDGains shooterPID = new PIDGains(1, 0, 0, 0);
     private double shooterIZone = 1;
     private double shooterFF = 0.00022;
     private double shooterMinOutput = -1;
@@ -49,8 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final RelativeEncoder indexerEncoder;
     private final CANSparkMax indexerMotor2;
 
-    private PIDGains indexerPID = new PIDGains(0.1, 0, 0);
-    private double indexerMaxIAccum = 0;
+    private PIDGains indexerPID = new PIDGains(0.1, 0, 0, 0);
     private double indexerMotorSpeed = 0;
     private double indexerMotorPosition = 0;
   
@@ -72,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.follow(shooterMotor, true);
         
         shooterPidController = shooterMotor.getPIDController();
-        setPidController(shooterPidController, shooterPID, shooterMaxIAccum, shooterIZone, shooterFF, shooterMinOutput, shooterMaxOutput);
+        setPidController(shooterPidController, shooterPID, shooterIZone, shooterFF, shooterMinOutput, shooterMaxOutput);
         setShooterMotor(0, ControlType.kDutyCycle);
 
         indexerMotor = new CANSparkMax(INDEXER_MOTOR_1_ID, MotorType.kBrushless);
@@ -88,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
         indexerMotor2.follow(indexerMotor, true);
 
         indexerPidController = indexerMotor.getPIDController();
-        setPidController(indexerPidController, indexerPID, indexerMaxIAccum);
+        setPidController(indexerPidController, indexerPID);
         setIndexerMotor(0, ControlType.kDutyCycle);
       }
   
@@ -173,17 +171,17 @@ public class ShooterSubsystem extends SubsystemBase {
         indexerPidController.setReference(value, type);
     }
 
-    private void setPidController(SparkPIDController pidController, PIDGains pid, double iMaxAccum) {
-        pidController.setP(pid.kP);
-        pidController.setI(pid.kI);
-        pidController.setD(pid.kD);
-        pidController.setIMaxAccum(iMaxAccum, 0);
+    private void setPidController(SparkPIDController pidController, PIDGains pid) {
+        pidController.setP(pid.p);
+        pidController.setI(pid.i);
+        pidController.setD(pid.d);
+        pidController.setIMaxAccum(pid.maxIAccum, 0);
     }
 
-    private void setPidController(SparkPIDController pidController, PIDGains pid, double iMaxAccum, double iZone, double FF, double minOutput, double maxOutput) {
-        setPidController(pidController, pid, iMaxAccum);
-        pidController.setP(iZone);
-        pidController.setI(FF);
+    private void setPidController(SparkPIDController pidController, PIDGains pid, double iZone, double FF, double minOutput, double maxOutput) {
+        setPidController(pidController, pid);
+        pidController.setIZone(iZone);
+        pidController.setFF(FF);
         pidController.setOutputRange(minOutput, maxOutput);
     }
 }
