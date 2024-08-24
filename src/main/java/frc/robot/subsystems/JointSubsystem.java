@@ -108,6 +108,10 @@ public class JointSubsystem extends SubsystemBase {
         setMotor(jointEncoder.getPosition(), ControlType.kPosition);
     }
 
+    public boolean getZeroed() {
+        return zeroed;
+    }
+
     public Command stowPositionCommand() {
         return this.runOnce(() -> setMotorPosition(STOW_POSITION));
     }
