@@ -68,7 +68,7 @@ public class NeoSwerveModule implements SwerveModule{
         this.desiredState = new SwerveModuleState(0.0, Rotation2d.fromRadians(0));
 
         driveController = new PIDController(drivePIDGains.p, drivePIDGains.i, drivePIDGains.d);
-        driveFeedforward = new SimpleMotorFeedforward(driveFFGains.kS, driveFFGains.kV, driveFFGains.kA);
+        driveFeedforward = new SimpleMotorFeedforward(driveFFGains.s, driveFFGains.v, driveFFGains.a);
 
         driveRelativeEncoder = driveMotor.getEncoder();
 
@@ -90,9 +90,9 @@ public class NeoSwerveModule implements SwerveModule{
         drivekPEntry = moduleNT.getDoubleTopic("tuning/drivekP").getEntry(drivePIDGains.p);
         drivekIEntry = moduleNT.getDoubleTopic("tuning/drivekI").getEntry(drivePIDGains.i);
         drivekDEntry = moduleNT.getDoubleTopic("tuning/drivekD").getEntry(drivePIDGains.d);
-        drivekSEntry = moduleNT.getDoubleTopic("tuning/drivekS").getEntry(driveFFGains.kS);
-        drivekVEntry = moduleNT.getDoubleTopic("tuning/drivekV").getEntry(driveFFGains.kV);
-        drivekAEntry = moduleNT.getDoubleTopic("tuning/drivekA").getEntry(driveFFGains.kA);
+        drivekSEntry = moduleNT.getDoubleTopic("tuning/drivekS").getEntry(driveFFGains.s);
+        drivekVEntry = moduleNT.getDoubleTopic("tuning/drivekV").getEntry(driveFFGains.v);
+        drivekAEntry = moduleNT.getDoubleTopic("tuning/drivekA").getEntry(driveFFGains.a);
 
         steerkPEntry = moduleNT.getDoubleTopic("tuning/steerkP").getEntry(steerPIDGains.p);
         steerkIEntry = moduleNT.getDoubleTopic("tuning/steerkI").getEntry(steerPIDGains.i);
@@ -101,9 +101,9 @@ public class NeoSwerveModule implements SwerveModule{
         drivekPEntry.set(drivePIDGains.p);
         drivekIEntry.set(drivePIDGains.i);
         drivekDEntry.set(drivePIDGains.d);
-        drivekSEntry.set(driveFFGains.kS);
-        drivekVEntry.set(driveFFGains.kV);
-        drivekAEntry.set(driveFFGains.kA);
+        drivekSEntry.set(driveFFGains.s);
+        drivekVEntry.set(driveFFGains.v);
+        drivekAEntry.set(driveFFGains.a);
 
         steerkPEntry.set(steerPIDGains.p);
         steerkIEntry.set(steerPIDGains.i);

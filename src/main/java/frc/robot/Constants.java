@@ -31,16 +31,29 @@ public final class Constants {
     public static final int DRIVER_XBOX_PORT = 0;
     public static final int OPERATOR_XBOX_PORT = 1;
 
+    // Shooter
     // //Shooter
     public static final int SHOOTER_MOTOR_1_ID = 4;
     public static final int SHOOTER_MOTOR_2_ID = 3;
-    public static final int INDEXER_MOTOR_1_ID = 11;
-    public static final int INDEXER_MOTOR_2_ID = 14;
 
-    //Constants
-    public static final double INDEXER_SPEED = 0.7;
+    //Intake
+    public static final int INTAKE_MOTOR_1_ID = -1; //need proper defenition
+    public static final int INTAKE_MOTOR_2_ID = -1; //need proper defenition
+    public static final int INTAKE_BEAM_BREAK_PORT = -1; //need proper defenition
 
-    //rpm
+    // Joint
+    public static final int JOINT_MOTOR_1_ID = 0; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_2_ID = 0; // FIXME: Change motor ID
+    public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
+
+    public static final double STOW_POSITION = 0.0;
+    public static final double SHOOTING_POSITION = 1.0;
+    public static final double JOINT_MIN_POSITION = 0.0;
+    public static final double JOINT_MAX_POSITION = 0.0;
+
+    // Constants
+
+    // rpm
     public static final double SPEAKER_SPEED = 3000;
     public static final double SPIN_RATIO = 0.3;
 
