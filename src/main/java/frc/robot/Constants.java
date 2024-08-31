@@ -32,6 +32,7 @@ public final class Constants {
     public static final int OPERATOR_XBOX_PORT = 1;
 
     // Shooter
+    // //Shooter
     public static final int SHOOTER_MOTOR_1_ID = 4;
     public static final int SHOOTER_MOTOR_2_ID = 3;
 
@@ -63,25 +64,25 @@ public final class Constants {
     public static final double DRIVETRAIN_WIDTH = 0.5271; // Distance between center of left and right swerve wheels in meters
     public static final double DRIVETRAIN_LENGTH = 0.5271; // Distance between center of front and back swerve wheels in meters
 
-    public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 16;
-    public static final int BACK_RIGHT_STEER_MOTOR_ID = 17;
-    public static final int BACK_RIGHT_STEER_ENCODER_ID = 23;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(24.697 + 180);
+    public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
+    public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
+    public static final int BACK_RIGHT_STEER_ENCODER_ID = 8;
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(168.65);
 
-    public static final int BACK_LEFT_DRIVE_MOTOR_ID = 12;
-    public static final int BACK_LEFT_STEER_MOTOR_ID = 13;
-    public static final int BACK_LEFT_STEER_ENCODER_ID = 21;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(-72.510 + 180);
+    public static final int BACK_LEFT_DRIVE_MOTOR_ID = 2;
+    public static final int BACK_LEFT_STEER_MOTOR_ID = 3;
+    public static final int BACK_LEFT_STEER_ENCODER_ID = 9;
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(327.3);
 
-    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 14;
-    public static final int FRONT_RIGHT_STEER_MOTOR_ID = 15;
-    public static final int FRONT_RIGHT_STEER_ENCODER_ID = 22;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(174.841 + 180);
+    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
+    public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
+    public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(356.48);
 
-    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 10;
-    public static final int FRONT_LEFT_STEER_MOTOR_ID = 11;
-    public static final int FONT_LEFT_STEER_ENCODER_ID = 20;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(57.920 + 180);
+    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
+    public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
+    public static final int FONT_LEFT_STEER_ENCODER_ID = 10;
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(294.1);
 
     public static final double WHEEL_DIAMETER = 0.1016;
 
