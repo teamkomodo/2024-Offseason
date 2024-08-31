@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.PIDGains;
 import frc.robot.util.Util;
@@ -108,7 +109,7 @@ public class JointSubsystem extends SubsystemBase {
         setMotor(jointEncoder.getPosition(), ControlType.kPosition);
     }
 
-    public boolean getZeroed() {
+    public boolean isZeroed() {
         return zeroed;
     }
 
@@ -118,6 +119,10 @@ public class JointSubsystem extends SubsystemBase {
 
     public Command shootingPositionCommand() {
         return this.runOnce(() -> setMotorPosition(SHOOTING_POSITION));
+    }
+
+    public Command zeroJointCommand() {
+        return Commands.runEnd(() -> setMotorDutyCycle(-0.1), () -> setMotorDutyCycle(0), this).until(() -> (zeroed));
     }
     
     private void setMotor(double value, ControlType type) {

@@ -3,32 +3,19 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.JointSubsystem;
 
-
-public class ZeroJointCommand extends Command{
+public class ZeroJointCommand extends DynamicCommand {
 
     private final JointSubsystem jointSubsystem;
-    private final double velocity;
 
-    public ZeroJointCommand(JointSubsystem jointSubsystem, double velocity) {
-        this.jointSubsystem = jointSubsystem;
-        this.velocity = velocity;
-    }
-
-    @Override
-    public void initialize() {
+    public ZeroJointCommand(JointSubsystem jointSubsystem) {
         
+        this.jointSubsystem = jointSubsystem;
+
+        addRequirements(jointSubsystem);
     }
 
     @Override
-    public void execute() {
-        if (!jointSubsystem.getZeroed()) {
-            jointSubsystem.setMotorVelocity(velocity);
-        }
+    protected Command getCommand() {
+        return jointSubsystem.zeroJointCommand();
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        jointSubsystem.holdMotorPosition();
-    }
-    
 }
