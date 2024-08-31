@@ -34,8 +34,4 @@ public class PIDGains {
         this.numArgs = 8;
     }
     
-    public PIDGains(double p, double i, double d, double maxIAccum, double a, double b, double c, double e) {
-        this(0, 0, 0, 0);
-    }
-    
 }
