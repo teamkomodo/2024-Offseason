@@ -24,16 +24,19 @@ import static frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase{
 
-    // reference LEON code if needing to dupe motor incase there are 2 intake moters (Left and Right)
+    // dupe motors
 
     //defines motors
-    private final CANSparkMax intakeMotor;
+    private final CANSparkMax intakeMotorLeft;
+    private final CANSparkMax intakeMotorRight;
     
     //Encoders
-    private final RelativeEncoder intakeEncoder;
+    private final RelativeEncoder intakeEncoderLeft;
+    private final RelativeEncoder intakeEncoderRight;
     
     //PID Controllers
-    private final SparkPIDController intakePidController;
+    private final SparkPIDController intakePidControllerLeft;
+    private final SparkPIDController intakePidControllerRight;
     
     //defines beam break sensor
     private final DigitalInput beamBreakSensor;
@@ -94,34 +97,49 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeDEntry.set(intakeD);
 
         //Initialize the motors
-        intakeMotor = new CANSparkMax(INTAKE_MOTOR_ID, MotorType.kBrushless); //find motor id
+        intakeMotorLeft = new CANSparkMax(INTAKE_MOTOR_ID_LEFT, MotorType.kBrushless); //find motor id left
+        intakeMotorRight = new CANSparkMax(INTAKE_MOTOR_ID_RIGHT, MotorType.kBrushless); //find motor id right
         
         //inverts motors to correct orientation
-        intakeMotor.setInverted(true); //find out
+        intakeMotorLeft.setInverted(false); //find out
+        intakeMotorRight.setInverted(false); //find out
 
         //Initialize the beam break sensor
         beamBreakSensor = new DigitalInput(INTAKE_BEAM_BREAK_PORT); //find port number
         
         //Initializes encoders
-        intakeEncoder = intakeMotor.getEncoder();
+        intakeEncoderLeft = intakeMotorLeft.getEncoder();
+        intakeEncoderRight = intakeMotorRight.getEncoder();
         
         //sets encoder positions to 0
-        intakeEncoder.setPosition(0);
+        intakeEncoderLeft.setPosition(0);
+        intakeEncoderRight.setPosition(0);
         
-        //initializes intake PID controller to the PID controller in intakeMotor
-        intakePidController = intakeMotor.getPIDController();
-        //sets PID values
-        intakePidController.setP(intakeP);
-        intakePidController.setI(intakeI);
-        intakePidController.setD(intakeD);
-        intakePidController.setIZone(intakeIZone);
-        intakePidController.setFF(intakeFF);
-        intakePidController.setOutputRange(intakeMinOutput, intakeMaxOutput);
+        //initializes intake PID controller to the PID controller in intakeMotor Left
+        intakePidControllerLeft = intakeMotorLeft.getPIDController();
+        //sets PID values Left
+        intakePidControllerLeft.setP(intakeP);
+        intakePidControllerLeft.setI(intakeI);
+        intakePidControllerLeft.setD(intakeD);
+        intakePidControllerLeft.setIZone(intakeIZone);
+        intakePidControllerLeft.setFF(intakeFF);
+        intakePidControllerLeft.setOutputRange(intakeMinOutput, intakeMaxOutput);
+
+        //initializes intake PID controller to the PID controller in intakeMotor Left
+        intakePidControllerRight = intakeMotorRight.getPIDController();
+        //sets PID values Left
+        intakePidControllerRight.setP(intakeP);
+        intakePidControllerRight.setI(intakeI);
+        intakePidControllerRight.setD(intakeD);
+        intakePidControllerRight.setIZone(intakeIZone);
+        intakePidControllerRight.setFF(intakeFF);
+        intakePidControllerRight.setOutputRange(intakeMinOutput, intakeMaxOutput);
         
     }
 
     public void teleopInit() {
-        intakeMotor.set(0);
+        intakeMotorLeft.set(0);
+        intakeMotorRight.set(0);
     }
 
     @Override
@@ -159,19 +177,22 @@ public class IntakeSubsystem extends SubsystemBase{
         double newIntakeP = intakePEntry.get(intakeP);
         if(newIntakeP != intakeP) {
             intakeP = newIntakeP;
-            intakePidController.setP(intakeP);
+            intakePidControllerLeft.setP(intakeP);
+            intakePidControllerRight.setP(intakeP);
         }
 
         double newIntakeI = intakeIEntry.get(intakeI);
         if(newIntakeI != intakeI) {
             intakeI = newIntakeI;
-            intakePidController.setI(intakeI);
+            intakePidControllerLeft.setI(intakeI);
+            intakePidControllerRight.setI(intakeI);
         }
 
         double newIntakeD = intakeDEntry.get(intakeD);
         if(newIntakeD != intakeD) {
             intakeD = newIntakeD;
-            intakePidController.setD(intakeD);
+            intakePidControllerLeft.setD(intakeD);
+            intakePidControllerRight.setD(intakeD);
         }
 
     
@@ -201,7 +222,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }*/
 
     public double getIntakeVelocity() {
-        return intakeEncoder.getVelocity();
+        return intakeEncoderLeft.getVelocity();
     }
 
     public double getFilteredCurrent() {
@@ -212,18 +233,21 @@ public class IntakeSubsystem extends SubsystemBase{
     // commands the intake to a target velocity
     public void setIntakeVelocity(double velocity){
          System.out.println("RUNNING INTAKE: " + velocity);
-         intakePidController.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+         intakePidControllerLeft.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+         intakePidControllerRight.setReference(velocity, CANSparkMax.ControlType.kVelocity);
     }
     
     public void setIntakePercent(double percent){
         System.out.println("RUNNING INTAKE, SPEED " + percent);
-        intakePidController.setReference(percent, ControlType.kDutyCycle);
+        intakePidControllerLeft.setReference(percent, ControlType.kDutyCycle);
+        intakePidControllerRight.setReference(percent, ControlType.kDutyCycle);
     }
 
     //turn off intake and sets Iaccum to 0 to reset I term
     public void turnOffIntake(){
         setIntakePercent(0);
-        intakePidController.setIAccum(0);
+        intakePidControllerLeft.setIAccum(0);
+        intakePidControllerRight.setIAccum(0);
 
     }
 
