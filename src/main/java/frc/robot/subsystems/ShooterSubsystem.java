@@ -21,34 +21,18 @@ import static frc.robot.Constants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final NetworkTable shooterTable = NetworkTableInstance.getDefault().getTable("shooter");
-    private final DoublePublisher shooterMotorSpeedPublisher = shooterTable.getDoubleTopic("shooterMotorSpeed").publish();
-    private final DoublePublisher shooterMotorPositionPublisher = shooterTable.getDoubleTopic("shooterMotorPosition").publish();
-
-    private final NetworkTable indexerTable = NetworkTableInstance.getDefault().getTable("indexer");
-    private final DoublePublisher indexerMotorSpeedPublisher = indexerTable.getDoubleTopic("indexerMotorSpeed").publish();
-    private final DoublePublisher indexerMotorPositionPublisher = indexerTable.getDoubleTopic("indexerMotorPosition").publish();
+    private final DoublePublisher motorSpeedPublisher = shooterTable.getDoubleTopic("shooterMotorSpeed").publish();
+    private final DoublePublisher motorPositionPublisher = shooterTable.getDoubleTopic("shooterMotorPosition").publish();
 
     private final CANSparkMax shooterMotor;
     private final SparkPIDController shooterPidController;
     private final RelativeEncoder shooterEncoder;
     private final CANSparkMax shooterMotor2;
 
-    private PIDGains shooterPID = new PIDGains(1, 0, 0, 0);
-    private double shooterIZone = 1;
-    private double shooterFF = 0.00022;
-    private double shooterMinOutput = -1;
-    private double shooterMaxOutput = 1;
-    private double shooterMotorSpeed = 0;
-    private double shooterMotorPosition = 0;
+    private PIDGains pid = new PIDGains(1, 0, 0, 0, 1, 0.00022, -1, 1);
 
-    private final CANSparkMax indexerMotor;
-    private final CANSparkMax indexerMotor2;
-    private final SparkPIDController indexerPidController;
-    private final RelativeEncoder indexerEncoder;
-
-    private PIDGains indexerPID = new PIDGains(0.1, 0, 0, 0);
-    private double indexerMotorSpeed = 0;
-    private double indexerMotorPosition = 0;
+    private double motorSpeed = 0;
+    private double motorPosition = 0;
   
     private double smoothCurrent = 0;
     private double filterConstant = 0.8;
@@ -68,24 +52,8 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.follow(shooterMotor, true);
         
         shooterPidController = shooterMotor.getPIDController();
-        Util.setPidController(shooterPidController, shooterPID, shooterIZone, shooterFF, shooterMinOutput, shooterMaxOutput);
-        setShooterMotor(0, ControlType.kDutyCycle);
-
-        indexerMotor = new CANSparkMax(INDEXER_MOTOR_1_ID, MotorType.kBrushless);
-        indexerMotor.setInverted(false);
-        indexerMotor.setSmartCurrentLimit(30);
-
-        indexerEncoder = indexerMotor.getEncoder();
-        indexerEncoder.setPosition(0);
-
-        indexerMotor2 = new CANSparkMax(INDEXER_MOTOR_2_ID, MotorType.kBrushless);
-        indexerMotor2.setSmartCurrentLimit(30);
-        indexerMotor2.setInverted(true);
-        indexerMotor2.follow(indexerMotor, true);
-
-        indexerPidController = indexerMotor.getPIDController();
-        Util.setPidController(indexerPidController, indexerPID);
-        setIndexerMotor(0, ControlType.kDutyCycle);
+        Util.setPidController(shooterPidController, pid);
+        setMotor(0, ControlType.kDutyCycle);
       }
   
     @Override
@@ -95,8 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   
     public void teleopInit() {
-        setShooterMotor(0, ControlType.kDutyCycle);
-        setIndexerMotor(0, ControlType.kDutyCycle);
+        setMotor(0, ControlType.kDutyCycle);
     }
   
     public double getSmoothCurrent() {
@@ -104,68 +71,37 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void updateTable() {
-        shooterMotorSpeedPublisher.set(shooterMotorSpeed);
-        shooterMotorPositionPublisher.set(shooterMotorPosition);
-        indexerMotorSpeedPublisher.set(indexerMotorSpeed);
-        indexerMotorPositionPublisher.set(indexerMotorPosition);
+        motorSpeedPublisher.set(motorSpeed);
+        motorPositionPublisher.set(motorPosition);
     }
  
-    public void setShooterMotorPosition(double position) {
-        setShooterMotor(position, ControlType.kPosition);
+    public void setMotorPosition(double position) {
+        setMotor(position, ControlType.kPosition);
     }
   
-    public void setShooterMotorDutyCycle(double dutyCycle) {
-        System.out.println("ran motor");
-        setShooterMotor(dutyCycle, ControlType.kDutyCycle);
+    public void setMotorDutyCycle(double dutyCycle) {
+        setMotor(dutyCycle, ControlType.kDutyCycle);
     }
   
-    public void setShooterMotorVelocity(double velocity) {
-        setShooterMotor(velocity, ControlType.kVelocity);
+    public void setMotorVelocity(double velocity) {
+        setMotor(velocity, ControlType.kVelocity);
     }
   
-    public void holdShooterMotorPosition() {
-        setShooterMotor(shooterEncoder.getPosition(), ControlType.kPosition);
+    public void holdMotorPosition() {
+        setMotor(shooterEncoder.getPosition(), ControlType.kPosition);
     }
   
-    public double getShooterCurrent() {
+    public double getCurrent() {
         return shooterMotor.getOutputCurrent();
     }
 
-    private void setShooterMotor(double value, ControlType type) {
+    private void setMotor(double value, ControlType type) {
         if (type == ControlType.kDutyCycle || type == ControlType.kVelocity) {
-            shooterMotorSpeed = value;
+            motorSpeed = value;
         } else if (type == ControlType.kPosition) {
-            shooterMotorPosition = value;
+            motorPosition = value;
         }
         shooterPidController.setReference(value, type);
     }
 
-    public void setIndexerMotorPosition(double position) {
-        setIndexerMotor(position, ControlType.kPosition);
-    }
-  
-    public void setIndexerMotorDutyCycle(double dutyCycle) {
-        setIndexerMotor(dutyCycle, ControlType.kDutyCycle);
-    }
-  
-    public void setIndexerMotorVelocity(double velocity) {
-        setIndexerMotor(velocity, ControlType.kVelocity);
-    }
-  
-    public void holdIndexerMotorPosition() {
-        setIndexerMotor(shooterEncoder.getPosition(), ControlType.kPosition);
-    }
-  
-    public double getIndexerCurrent() {
-        return indexerMotor.getOutputCurrent();
-    }
-
-    private void setIndexerMotor(double value, ControlType type) {
-        if (type == ControlType.kDutyCycle || type == ControlType.kVelocity) {
-            indexerMotorSpeed = value;
-        } else if (type == ControlType.kPosition) {
-            indexerMotorPosition = value;
-        }
-        indexerPidController.setReference(value, type);
-    }
 }

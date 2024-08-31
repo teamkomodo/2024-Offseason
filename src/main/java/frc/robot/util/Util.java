@@ -19,17 +19,19 @@ public class Util {
     }
 
     public static void setPidController(SparkPIDController pidController, PIDGains pid) {
-        pidController.setP(pid.p);
-        pidController.setI(pid.i);
-        pidController.setD(pid.d);
-        pidController.setIMaxAccum(pid.maxIAccum, 0);
-    }
-
-    public static void setPidController(SparkPIDController pidController, PIDGains pid, double iZone, double FF, double minOutput, double maxOutput) {
-        setPidController(pidController, pid);
-        pidController.setIZone(iZone);
-        pidController.setFF(FF);
-        pidController.setOutputRange(minOutput, maxOutput);
+        switch (pid.numArgs) {
+            case 8:
+                pidController.setOutputRange(pid.minOutput, pid.maxOutput);
+                pidController.setFF(pid.FF);
+                pidController.setIZone(pid.iZone);
+            case 4:
+                pidController.setIMaxAccum(pid.maxIAccum, 0);
+            case 3:
+                pidController.setP(pid.p);
+                pidController.setI(pid.i);
+                pidController.setD(pid.d);
+            break;
+        }
     }
 
 }
