@@ -49,15 +49,11 @@ public class IntakeSubsystem extends SubsystemBase{
     private final SparkPIDController intakePidController;
     
     //defines beam break sensor
-    private final DigitalInput beamBreakSensor;
+    private final DigitalInput noteIntakedSensor;
+    private final DigitalInput noteBeforeShooterSensor;
     
     //PID values for intake
-    private PIDGains pid = new PIDGains(1, 0, 0, 0, 0, 0, -1, 1);
-    
-
-    private boolean pieceLoaded = false;
-    private boolean pieceLoadedAtLastCheck = false;
-    
+    private PIDGains pid = new PIDGains(1, 0, 0, 1, 0, 0, -1, 1);
     
     public final SysIdRoutine intakeRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(), 
@@ -70,21 +66,24 @@ public class IntakeSubsystem extends SubsystemBase{
     private double filteredCurrent = 0;
     private double currentFilterConstant = 0.1;
 
-    private boolean pieceDetected = false;
-    private double beambreakPasses = 0;
+    private boolean noteWasIntaked = false;
+    private boolean noteWasBeforeShooter = false;
+    private boolean intakeHasPiece = false;
+    private boolean pieceAtShooter = false;
     
     public IntakeSubsystem(){
 
         //Initialize the motors
-        intakeMotor = new CANSparkMax(INTAKE_MOTOR_1_ID, MotorType.kBrushless); //find motor id
+        intakeMotor = new CANSparkMax(INTAKE_MOTOR_1_ID, MotorType.kBrushless); //FIXME: find motor id
         intakeMotor.setInverted(false);
 
-        intakeMotor2 = new CANSparkMax(INTAKE_MOTOR_2_ID, MotorType.kBrushless); //find motor id
+        intakeMotor2 = new CANSparkMax(INTAKE_MOTOR_2_ID, MotorType.kBrushless); //FIXME: find motor id
         intakeMotor2.setInverted(true);
         intakeMotor2.follow(intakeMotor, true);
 
         //Initialize the beam break sensor
-        beamBreakSensor = new DigitalInput(INTAKE_BEAM_BREAK_PORT); //find port number
+        noteIntakedSensor = new DigitalInput(INTAKE_BEAM_BREAK_PORT); //FIXME: find port number
+        noteBeforeShooterSensor = new DigitalInput(SHOOTER_BEAM_BREAK_PORT); //FIXME: find port number
         
         //Initializes encoders
         intakeEncoder = intakeMotor.getEncoder();
@@ -92,11 +91,13 @@ public class IntakeSubsystem extends SubsystemBase{
         //sets encoder positions to 0
         intakeEncoder.setPosition(0);
         
-        //initializes intake PID controller to the PID controller in intakeMotor 
+        //initialize intake PID controller and set PID values
         intakePidController = intakeMotor.getPIDController();
-        //sets PID values
         Util.setPidController(intakePidController, pid);
 
+        // Set sensor prev values
+        noteWasIntaked = noteIntakedSensor.get();
+        noteWasBeforeShooter = noteBeforeShooterSensor.get();
     }
 
     public void teleopInit() {
@@ -105,51 +106,51 @@ public class IntakeSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        updateShooterTelemetry();
+        updateTelemetry();
         filterCurrent();
-        countBeambreakPasses();
+        checkSensors();
     }
 
     private void filterCurrent() {
         filteredCurrent = filteredCurrent * (1 - currentFilterConstant) + intakeMotor.getOutputCurrent() * currentFilterConstant;
     }
 
-    private void countBeambreakPasses() {        
-        if (pieceDetected != isPieceDetected()) {
-            pieceDetected = isPieceDetected();
-            beambreakPasses += 1 * Math.signum(intakeEncoder.getVelocity());
+    public void checkSensors() {
+        if (sensorSeesPiece(noteBeforeShooterSensor)) {
+            pieceAtShooter = true;
+            turnOffIntake();
+        } else {
+            pieceAtShooter = false;
         }
+        
+        intakeHasPiece = sensorSeesPiece(noteIntakedSensor);
+
+        noteWasIntaked = sensorSeesPiece(noteIntakedSensor);
+        noteWasBeforeShooter = sensorSeesPiece(noteBeforeShooterSensor);
     }
-    
-    public void updateShooterTelemetry(){
-        pieceDetectedPublisher.set(isPieceDetected());
+
+    public void updateTelemetry(){
+        pieceDetectedPublisher.set(hasPieceReady());
         intakeVelocityPublisher.set(intakeEncoder.getVelocity());
         filteredCurrentPublisher.set(filteredCurrent);
-        hasPiecePublisher.set(hasPiece());
+        hasPiecePublisher.set(hasPieceReady());
         currentCommandPublisher.set(getCurrentCommand() != null? getCurrentCommand().getName() : "null");
     }
     
     /**
-     * @return If the beambreak sensor is triggered
+     * @return If the beambreak sensor sees a note
      */
-    public boolean isPieceDetected(){
+    public boolean sensorSeesPiece(DigitalInput sensor){
         // The sensor returns false when the beam is broken
-        return !beamBreakSensor.get();
+        return !sensor.get();
     }
 
     /**
-     * By counting the number of times the beam break sensor is triggered, we can determine if the turbotake has a piece even if the beam break is not currently triggered.
-     * 
      * @return If the turbotake thinks it has a piece
      */
-    public boolean hasPiece() {
-        return beambreakPasses % 2 == 1 || isPieceDetected();
+    public boolean hasPieceReady() {
+        return pieceAtShooter;
     }
-
-    /* 
-    public double getShooterVelocity() {
-        return rightShooterEncoder.getVelocity();
-    }*/
 
     public double getIntakeVelocity() {
         return intakeEncoder.getVelocity();
@@ -159,55 +160,29 @@ public class IntakeSubsystem extends SubsystemBase{
         return filteredCurrent;
     }
 
-    
-    // commands the intake to a target velocity
+    // Command the intake to a target velocity
     public void setIntakeVelocity(double velocity){
          System.out.println("RUNNING INTAKE: " + velocity);
-         intakePidController.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+         intakePidController.setReference(velocity, ControlType.kVelocity);
     }
     
-    public void setIntakePercent(double percent){
-        System.out.println("RUNNING INTAKE, SPEED " + percent);
-        intakePidController.setReference(percent, ControlType.kDutyCycle);
+    public void setIntakeDutyCycle(double dutyCycle){
+        System.out.println("RUNNING INTAKE, SPEED " + dutyCycle);
+        intakePidController.setReference(dutyCycle, ControlType.kDutyCycle);
     }
 
-    //turn off intake and sets Iaccum to 0 to reset I term
+    // Turn off intake and set Iaccum to 0 to reset I term
     public void turnOffIntake(){
-        setIntakePercent(0);
+        setIntakeDutyCycle(0);
         intakePidController.setIAccum(0);
-
     }
-
-    public void checkNoteIntake(){
-        pieceLoadedAtLastCheck = pieceLoaded;
-        pieceLoaded = isPieceDetected();
-        if(!pieceLoadedAtLastCheck && pieceLoaded){
-            turnOffIntake();
-        }
-    }
-
-
-    
-    // Command 
-    public Command shooterSysIdCommand(){
-        return Commands.sequence(
-                intakeRoutine.quasistatic(SysIdRoutine.Direction.kForward),
-                new WaitCommand(5), 
-                intakeRoutine.quasistatic(SysIdRoutine.Direction.kReverse),
-                new WaitCommand(5),
-                intakeRoutine.dynamic(SysIdRoutine.Direction.kForward),
-                new WaitCommand(5),
-                intakeRoutine.dynamic(SysIdRoutine.Direction.kReverse)
-        );
-    }
-    
-
 
     public Command intake(){
         return Commands.sequence(
-            Commands.waitUntil(() -> !isPieceDetected()),
-            Commands.runOnce(() -> setIntakePercent(-1)),
-            Commands.waitSeconds(1),
+            Commands.waitUntil(() -> (!hasPieceReady())),
+            Commands.runOnce(() -> setIntakeDutyCycle(INTAKE_SPEED)),
+            Commands.waitUntil(() -> hasPieceReady()),
+            Commands.waitSeconds(0.005),
             Commands.runOnce(() -> turnOffIntake())
         ).finallyDo(() -> {
             turnOffIntake();

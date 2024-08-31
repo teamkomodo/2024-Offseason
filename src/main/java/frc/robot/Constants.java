@@ -36,9 +36,11 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_2_ID = 3;
 
     //Intake
-    public static final int INTAKE_MOTOR_1_ID = -1; //need proper defenition
-    public static final int INTAKE_MOTOR_2_ID = -1; //need proper defenition
-    public static final int INTAKE_BEAM_BREAK_PORT = -1; //need proper defenition
+    public static final int INTAKE_MOTOR_1_ID = 0; // FIXME: need proper defenition
+    public static final int INTAKE_MOTOR_2_ID = 0; // FIXME: need proper defenition
+    public static final int INTAKE_BEAM_BREAK_PORT = 0; // FIXME: need proper defenition
+    public static final int SHOOTER_BEAM_BREAK_PORT = 0; // FIXME: need proper defenition
+    public static final double INTAKE_SPEED = -0.5;
 
     // Joint
     public static final int JOINT_MOTOR_1_ID = 0; // FIXME: Change motor ID
