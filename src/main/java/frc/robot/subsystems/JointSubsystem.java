@@ -24,8 +24,10 @@ import frc.robot.util.Util;
 import static frc.robot.Constants.*;
 
 public class JointSubsystem extends SubsystemBase {
+    
     private final NetworkTable jointTable = NetworkTableInstance.getDefault().getTable("joint");
-    private final DoublePublisher jointMotorPositionPublisher = jointTable.getDoubleTopic("jointMotorPosition").publish();
+    private final DoublePublisher jointMotorPositionPublisher = jointTable.getDoubleTopic("motorPosition").publish();
+    private final DoublePublisher jointMotorDutyCyclePublisher = jointTable.getDoubleTopic("motorDutyCycle").publish();
 
     private final CANSparkMax jointMotor;
     private final CANSparkMax jointMotor2;
@@ -34,7 +36,8 @@ public class JointSubsystem extends SubsystemBase {
     private final DigitalInput jointLimitSwitch;
 
     private PIDGains jointPID = new PIDGains(0.1, 0, 0, 0);
-    private boolean prevLimitSwitchValue;
+    private boolean limitSwitch;
+    private boolean limitSwitchAtLastCeck;
     private boolean zeroed = false;
 
     private double jointMotorPosition = 0;
@@ -43,6 +46,7 @@ public class JointSubsystem extends SubsystemBase {
         jointMotor = new CANSparkMax(JOINT_MOTOR_1_ID, MotorType.kBrushless);
         jointMotor.setSmartCurrentLimit(50);
         jointMotor.setInverted(false);
+
         jointMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) JOINT_MIN_POSITION);
         jointMotor.setSoftLimit(SoftLimitDirection.kForward, (float) JOINT_MAX_POSITION);
         jointMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
@@ -57,7 +61,7 @@ public class JointSubsystem extends SubsystemBase {
         jointEncoder.setPosition(0);
 
         jointLimitSwitch = new DigitalInput(JOINT_ZERO_SWITCH_CHANNEL);
-        prevLimitSwitchValue = jointLimitSwitch.get();
+        limitSwitchAtLastCeck = getLimitSwitch();
         
         jointPidController = jointMotor.getPIDController();
         Util.setPidController(jointPidController, jointPID);
@@ -76,21 +80,19 @@ public class JointSubsystem extends SubsystemBase {
 
     private void updateTable() {
         jointMotorPositionPublisher.set(jointMotorPosition);
+        jointMotorDutyCyclePublisher.set(jointEncoder.getVelocity());
     }
 
     public void checkLimitSwitch() {
-        if (getLimitSwitch() != prevLimitSwitchValue) {
+        limitSwitch = getLimitSwitch();
+        if (limitSwitch != limitSwitchAtLastCeck) {
             jointEncoder.setPosition(JOINT_MIN_POSITION);
             zeroed = true;
-            if (!prevLimitSwitchValue) { // Only stop motor on leading edge, meaning does not sense magnet before.
-                setMotorPosition(JOINT_MIN_POSITION);
+            if (!limitSwitchAtLastCeck) {
+                holdMotorPosition();
             }
         }
-        prevLimitSwitchValue = getLimitSwitch();
-    }
-
-    public boolean getLimitSwitch() {
-        return !jointLimitSwitch.get(); // jointLimitSwitch.get() is weird
+        limitSwitchAtLastCeck = limitSwitch;
     }
 
     public void setMotorPosition(double position) {
@@ -109,20 +111,16 @@ public class JointSubsystem extends SubsystemBase {
         setMotor(jointEncoder.getPosition(), ControlType.kPosition);
     }
 
-    public boolean isZeroed() {
-        return zeroed;
-    }
-
     public Command stowPositionCommand() {
-        return this.runOnce(() -> setMotorPosition(STOW_POSITION));
+        return this.runOnce(() -> setMotorPosition(JOINT_STOW_POSITION));
     }
 
     public Command shootingPositionCommand() {
-        return this.runOnce(() -> setMotorPosition(SHOOTING_POSITION));
+        return this.runOnce(() -> setMotorPosition(JOINT_SHOOTING_POSITION));
     }
 
     public Command zeroJointCommand() {
-        return Commands.runEnd(() -> setMotorDutyCycle(-0.1), () -> setMotorDutyCycle(0), this).until(() -> (zeroed));
+        return Commands.runEnd(() -> setMotorDutyCycle(-0.05), () -> setMotorDutyCycle(0), this).until(() -> (zeroed));
     }
     
     private void setMotor(double value, ControlType type) {
@@ -130,5 +128,13 @@ public class JointSubsystem extends SubsystemBase {
             jointMotorPosition = value;
         }
         jointPidController.setReference(value, type);
+    }
+
+    public boolean getLimitSwitch() {
+        return !jointLimitSwitch.get();
+    }
+
+    public boolean getZeroed() {
+        return zeroed;
     }
 }

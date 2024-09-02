@@ -21,7 +21,7 @@ public class ZeroJointCommand1 extends Command {
 
     @Override
     public void execute() {
-        if (!jointSubsystem.isZeroed()) {
+        if (!jointSubsystem.getZeroed()) {
             jointSubsystem.setMotorVelocity(velocity);
         }
     }

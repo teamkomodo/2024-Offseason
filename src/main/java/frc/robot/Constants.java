@@ -48,8 +48,8 @@ public final class Constants {
     public static final int JOINT_MOTOR_2_ID = 0; // FIXME: Change motor ID
     public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
 
-    public static final double STOW_POSITION = 0.0;
-    public static final double SHOOTING_POSITION = 1.0;
+    public static final double JOINT_STOW_POSITION = 0.0;
+    public static final double JOINT_SHOOTING_POSITION = 1.0;
     public static final double JOINT_MIN_POSITION = 0.0;
     public static final double JOINT_MAX_POSITION = 0.0;
 

@@ -20,9 +20,10 @@ import frc.robot.util.Util;
 import static frc.robot.Constants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
+    
     private final NetworkTable shooterTable = NetworkTableInstance.getDefault().getTable("shooter");
-    private final DoublePublisher motorSpeedPublisher = shooterTable.getDoubleTopic("shooterMotorSpeed").publish();
-    private final DoublePublisher motorPositionPublisher = shooterTable.getDoubleTopic("shooterMotorPosition").publish();
+    private final DoublePublisher motorSpeedPublisher = shooterTable.getDoubleTopic("motorSpeed").publish();
+    private final DoublePublisher motorPositionPublisher = shooterTable.getDoubleTopic("motorPosition").publish();
 
     private final CANSparkMax shooterMotor;
     private final SparkPIDController shooterPidController;
@@ -54,25 +55,25 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterPidController = shooterMotor.getPIDController();
         Util.setPidController(shooterPidController, pid);
         setMotor(0, ControlType.kDutyCycle);
-      }
+    }
   
     @Override
     public void periodic() {
-        smoothCurrent = smoothCurrent * filterConstant + shooterMotor.getOutputCurrent() * (1-filterConstant);
+        updateCurrent();
         updateTable();
     }
   
     public void teleopInit() {
         setMotor(0, ControlType.kDutyCycle);
     }
-  
-    public double getSmoothCurrent() {
-        return smoothCurrent;
-    }
 
     private void updateTable() {
         motorSpeedPublisher.set(motorSpeed);
         motorPositionPublisher.set(motorPosition);
+    }
+
+    private void updateCurrent() {
+        smoothCurrent = smoothCurrent * filterConstant + shooterMotor.getOutputCurrent() * (1-filterConstant);
     }
  
     public void setMotorPosition(double position) {
@@ -90,10 +91,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public void holdMotorPosition() {
         setMotor(shooterEncoder.getPosition(), ControlType.kPosition);
     }
-  
-    public double getCurrent() {
-        return shooterMotor.getOutputCurrent();
-    }
 
     private void setMotor(double value, ControlType type) {
         if (type == ControlType.kDutyCycle || type == ControlType.kVelocity) {
@@ -104,4 +101,11 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterPidController.setReference(value, type);
     }
 
+    public double getCurrent() {
+        return shooterMotor.getOutputCurrent();
+    }
+
+    public double getSmoothCurrent() {
+        return smoothCurrent;
+    }
 }

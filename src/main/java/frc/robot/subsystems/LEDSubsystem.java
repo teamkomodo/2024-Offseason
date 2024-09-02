@@ -9,6 +9,7 @@ import frc.robot.util.BlinkinPattern;
 import static frc.robot.Constants.*;
 
 public class LEDSubsystem extends SubsystemBase {
+    
     public static final double IDLE_PATTERN = 0.43; //Sparkle, Color 1 on Color 2
 
     private Spark frameLights = new Spark(A_FRAME_LED_CHANNEL);
