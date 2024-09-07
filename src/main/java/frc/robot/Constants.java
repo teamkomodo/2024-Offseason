@@ -33,8 +33,8 @@ public final class Constants {
 
     // Shooter
     // //Shooter
-    public static final int SHOOTER_MOTOR_1_ID = 4;
-    public static final int SHOOTER_MOTOR_2_ID = 3;
+    public static final int SHOOTER_MOTOR_1_ID = -1;
+    public static final int SHOOTER_MOTOR_2_ID = -1;
 
     //Intake
     public static final int INTAKE_MOTOR_1_ID = -1; //need proper defenition
@@ -42,8 +42,8 @@ public final class Constants {
     public static final int INTAKE_BEAM_BREAK_PORT = -1; //need proper defenition
 
     // Joint
-    public static final int JOINT_MOTOR_1_ID = 0; // FIXME: Change motor ID
-    public static final int JOINT_MOTOR_2_ID = 0; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_1_ID = -1; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_2_ID = -1; // FIXME: Change motor ID
     public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
 
     public static final double STOW_POSITION = 0.0;
