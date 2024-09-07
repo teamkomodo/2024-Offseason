@@ -59,8 +59,9 @@ public final class Constants {
 
     public static final double LINEAR_SLOW_MODE_MODIFIER = 0.5;
     public static final double ANGULAR_SLOW_MODE_MODIFIER = 0.3;
-    public static final double DRIVETRAIN_WIDTH = 0.5271; // Distance between center of left and right swerve wheels in meters
-    public static final double DRIVETRAIN_LENGTH = 0.5271; // Distance between center of front and back swerve wheels in meters
+    //these might be wrong way around, might have confused width and length
+    public static final double DRIVETRAIN_WIDTH = 0.4864163246; // Distance between center of left and right swerve wheels in meters
+    public static final double DRIVETRAIN_LENGTH = 0.4079583662; // Distance between center of front and back swerve wheels in meters
 
     public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
     public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
@@ -82,7 +83,7 @@ public final class Constants {
     public static final int FONT_LEFT_STEER_ENCODER_ID = 10;
     public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(294.1);
 
-    public static final double WHEEL_DIAMETER = 0.1016;
+    public static final double WHEEL_DIAMETER = 0.1016; // still correct?
 
     /**
      * motor rotations -> wheel rotations
