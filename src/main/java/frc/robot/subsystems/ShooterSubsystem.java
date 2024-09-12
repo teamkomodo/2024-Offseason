@@ -93,11 +93,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void setMotor(double value, ControlType type) {
-        if (type == ControlType.kDutyCycle || type == ControlType.kVelocity) {
+        if (type == ControlType.kDutyCycle || type == ControlType.kVelocity)
             motorSpeed = value;
-        } else if (type == ControlType.kPosition) {
+        else if (type == ControlType.kPosition)
             motorPosition = value;
-        }
         shooterPidController.setReference(value, type);
     }
 
