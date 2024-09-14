@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.FFGains;
+import frc.robot.util.FalconSwerveModule;
 import frc.robot.util.NeoSwerveModule;
 import frc.robot.util.PIDGains;
 import frc.robot.util.SwerveModule;
@@ -148,7 +149,7 @@ public class DrivetrainSubsystem implements Subsystem {
 
         // Drive FFGain updated AM 03/07
 
-        frontLeft = new NeoSwerveModule(
+        frontLeft = new FalconSwerveModule(
                 FRONT_LEFT_DRIVE_MOTOR_ID,
                 FRONT_LEFT_STEER_MOTOR_ID,
                 FONT_LEFT_STEER_ENCODER_ID,
@@ -158,7 +159,7 @@ public class DrivetrainSubsystem implements Subsystem {
                 new FFGains(0.19861, 3.2379, 0.562),
                 drivetrainNT.getSubTable("frontleft"));
 
-        frontRight = new NeoSwerveModule(
+        frontRight = new FalconSwerveModule(
                 FRONT_RIGHT_DRIVE_MOTOR_ID,
                 FRONT_RIGHT_STEER_MOTOR_ID,
                 FRONT_RIGHT_STEER_ENCODER_ID,
@@ -168,7 +169,7 @@ public class DrivetrainSubsystem implements Subsystem {
                 new FFGains(0.18406, 3.2722, 0.40914),
                 drivetrainNT.getSubTable("frontright"));
 
-        backLeft = new NeoSwerveModule(
+        backLeft = new FalconSwerveModule(
                 BACK_LEFT_DRIVE_MOTOR_ID,
                 BACK_LEFT_STEER_MOTOR_ID,
                 BACK_LEFT_STEER_ENCODER_ID,
@@ -178,7 +179,7 @@ public class DrivetrainSubsystem implements Subsystem {
                 new FFGains(0.17395, 3.286, 0.51328),
                 drivetrainNT.getSubTable("backleft"));
 
-        backRight = new NeoSwerveModule(
+        backRight = new FalconSwerveModule(
                 BACK_RIGHT_DRIVE_MOTOR_ID,
                 BACK_RIGHT_STEER_MOTOR_ID,
                 BACK_RIGHT_STEER_ENCODER_ID,
