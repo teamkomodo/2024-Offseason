@@ -20,7 +20,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import static frc.robot.Constants.*;
 
-public class IntakeSubsystem extends SubsystemBase{
+public class IntakeSubsystem extends SubsystemBase {
 
     private final DoublePublisher intakeVelocityPublisher = NetworkTableInstance.getDefault().getTable("intake").getDoubleTopic("intakeDutyCycle").publish();
     private final BooleanPublisher pieceIntakedPublisher = NetworkTableInstance.getDefault().getTable("intake").getBooleanTopic("pieceIntaked").publish();
@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private boolean noteLoaded;
     private boolean noteLoadedAtLastCheck;
     
-    public IntakeSubsystem(){
+    public IntakeSubsystem() {
         intakeMotor = new CANSparkMax(INTAKE_MOTOR_1_ID, MotorType.kBrushless); //FIXME: find motor id
         intakeMotor.setSmartCurrentLimit(30);
         intakeMotor.setInverted(false);
@@ -97,8 +97,9 @@ public class IntakeSubsystem extends SubsystemBase{
         noteIntaked = getNoteDetection(noteIntakedSensor);
         noteLoaded = getNoteDetection(noteLoadedSensor);
 
-        if(noteIntaked && !noteIntakedAtLastCheck && intakeEncoder.getVelocity() > 0)
+        if(noteIntaked && !noteIntakedAtLastCheck && intakeEncoder.getVelocity() > 0) {
             //LED blinkers and controller vibrations
+        }
         if(noteLoaded && !noteLoadedAtLastCheck)
             holdIntake();
         noteLoadedAtLastCheck = noteLoaded;
@@ -109,17 +110,17 @@ public class IntakeSubsystem extends SubsystemBase{
         return !noteIntaked && noteIntakedAtLastCheck && intakeEncoder.getVelocity() < 0;
     }
 
-    public void updateTelemetry(){
+    public void updateTelemetry() {
         pieceIntakedPublisher.set(noteIntaked);
         pieceLoadedPublisher.set(noteLoaded);
         intakeVelocityPublisher.set(intakeDutyCycle);
     }
 
-    public void setIntakeVelocity(double velocity){
+    public void setIntakeVelocity(double velocity) {
          setMotor(velocity, ControlType.kVelocity);
     }
     
-    public void setIntakeDutyCycle(double dutyCycle){
+    public void setIntakeDutyCycle(double dutyCycle) {
         setMotor(dutyCycle, ControlType.kDutyCycle);
     }
 
@@ -131,7 +132,7 @@ public class IntakeSubsystem extends SubsystemBase{
         return Commands.runEnd(() -> setIntakeDutyCycle(-0.1), () -> setIntakeDutyCycle(0), this).until(() -> (checkEjectStatus()));
     }
 
-    public void holdIntake(){
+    public void holdIntake() {
         setMotor(intakeEncoder.getPosition(), ControlType.kPosition);
     }
 
@@ -141,7 +142,7 @@ public class IntakeSubsystem extends SubsystemBase{
         intakePidController.setReference(value, type);
     }
 
-    // public Command intake(){
+    // public Command intake() {
     //     return Commands.sequence(
     //         Commands.waitUntil(() -> (!getHasPieceReady())),
     //         Commands.runOnce(() -> setIntakeDutyCycle(INTAKE_SPEED)),

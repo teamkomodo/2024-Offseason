@@ -225,7 +225,7 @@ public class DrivetrainSubsystem implements Subsystem {
         drive(chassisSpeeds, false, false);
     }
 
-    private void updateTelemetry(){
+    private void updateTelemetry() {
         //Swerve
         desiredSwerveStatesPublisher.set(new SwerveModuleState[] {
             frontLeft.getDesiredState(),
@@ -253,7 +253,7 @@ public class DrivetrainSubsystem implements Subsystem {
     }
 
     // tracks position with vision
-    private void visionPosePeriodic(){
+    private void visionPosePeriodic() {
 
         // Return if the limelight doesn't see a target
         if(validTargetSubscriber.get() != 1)
@@ -421,7 +421,7 @@ public class DrivetrainSubsystem implements Subsystem {
         
         double totalVelocity = Math.sqrt(Math.pow(xVelocity, 2) + Math.pow(yVelocity, 2));
 
-        if (totalVelocity > LINEAR_VELOCITY_CONSTRAINT){
+        if (totalVelocity > LINEAR_VELOCITY_CONSTRAINT) {
             xVelocity *= (LINEAR_VELOCITY_CONSTRAINT / totalVelocity);
             yVelocity *= (LINEAR_VELOCITY_CONSTRAINT / totalVelocity);
         }
@@ -479,7 +479,7 @@ public class DrivetrainSubsystem implements Subsystem {
         );
     }
     
-    public Command followPathCommand(String pathName){
+    public Command followPathCommand(String pathName) {
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
         return new FollowPathHolonomic(
