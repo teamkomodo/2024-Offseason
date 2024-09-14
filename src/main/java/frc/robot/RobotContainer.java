@@ -42,7 +42,31 @@ public class RobotContainer {
     
     private void configureBindings() {
 
+        Trigger driverRT = driverController.rightTrigger();
+
+        driverRT.onTrue(drivetrainSubsystem.enableSlowModeCommand());
+        driverRT.onFalse(drivetrainSubsystem.disableSlowModeCommand());
+
+        Trigger driverLB = driverController.leftBumper();
+       driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
+
+        driverA.onTrue(drivetrainSubsystem.driveSysIdRoutineCommand());
+        driverB.onTrue(drivetrainSubsystem.steerSysIdRoutineCommand());
+
+        // deadband and curves are applied in command
+        drivetrainSubsystem.setDefaultCommand(
+            drivetrainSubsystem.joystickDriveCommand(
+                () -> ( -driverController.getLeftY() ), // -Y on left joystick is +X for robot
+                () -> ( -driverController.getLeftX() ), // -X on left joystick is +Y for robot
+                () -> ( -driverController.getRightX() ) // -X on right joystick is +Z for robot
+            )
+        );
     }
+
+    Trigger driverA = driverController.a();
+    Trigger driverB = driverController.b();
+
+    
 
     public void teleopInit() {
 

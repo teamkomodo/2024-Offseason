@@ -31,16 +31,29 @@ public final class Constants {
     public static final int DRIVER_XBOX_PORT = 0;
     public static final int OPERATOR_XBOX_PORT = 1;
 
-    //Shooter
-    public static final int SHOOTER_MOTOR_1_ID = 4;
-    public static final int SHOOTER_MOTOR_2_ID = 3;
-    public static final int INDEXER_MOTOR_1_ID = 11;
-    public static final int INDEXER_MOTOR_2_ID = 14;
+    // Shooter
+    // //Shooter
+    public static final int SHOOTER_MOTOR_1_ID = -1;
+    public static final int SHOOTER_MOTOR_2_ID = -1;
 
-    //Constants
-    public static final double INDEXER_SPEED = 0.7;
+    //Intake
+    public static final int INTAKE_MOTOR_1_ID = -1; //need proper defenition
+    public static final int INTAKE_MOTOR_2_ID = -1; //need proper defenition
+    public static final int INTAKE_BEAM_BREAK_PORT = -1; //need proper defenition
 
-    //rpm
+    // Joint
+    public static final int JOINT_MOTOR_1_ID = -1; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_2_ID = -1; // FIXME: Change motor ID
+    public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
+
+    public static final double STOW_POSITION = 0.0;
+    public static final double SHOOTING_POSITION = 1.0;
+    public static final double JOINT_MIN_POSITION = 0.0;
+    public static final double JOINT_MAX_POSITION = 0.0;
+
+    // Constants
+
+    // rpm
     public static final double SPEAKER_SPEED = 3000;
     public static final double SPIN_RATIO = 0.3;
 
@@ -50,25 +63,25 @@ public final class Constants {
     public static final double DRIVETRAIN_WIDTH = 0.4864163246; // Distance between center of left and right swerve wheels in meters
     public static final double DRIVETRAIN_LENGTH = 0.4079583662; // Distance between center of front and back swerve wheels in meters
 
-    public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 16;
-    public static final int BACK_RIGHT_STEER_MOTOR_ID = 17;
-    public static final int BACK_RIGHT_STEER_ENCODER_ID = 23;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(24.697 + 180);
+    public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
+    public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
+    public static final int BACK_RIGHT_STEER_ENCODER_ID = 8;
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(168.65);
 
-    public static final int BACK_LEFT_DRIVE_MOTOR_ID = 12;
-    public static final int BACK_LEFT_STEER_MOTOR_ID = 13;
-    public static final int BACK_LEFT_STEER_ENCODER_ID = 21;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(-72.510 + 180);
+    public static final int BACK_LEFT_DRIVE_MOTOR_ID = 2;
+    public static final int BACK_LEFT_STEER_MOTOR_ID = 3;
+    public static final int BACK_LEFT_STEER_ENCODER_ID = 9;
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(327.3);
 
-    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 14;
-    public static final int FRONT_RIGHT_STEER_MOTOR_ID = 15;
-    public static final int FRONT_RIGHT_STEER_ENCODER_ID = 22;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(174.841 + 180);
+    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
+    public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
+    public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(356.48);
 
-    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 10;
-    public static final int FRONT_LEFT_STEER_MOTOR_ID = 11;
-    public static final int FONT_LEFT_STEER_ENCODER_ID = 20;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(57.920 + 180);
+    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
+    public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
+    public static final int FONT_LEFT_STEER_ENCODER_ID = 10;
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(294.1);
 
     public static final double WHEEL_DIAMETER = 0.1016; // still correct?
 
@@ -113,4 +126,6 @@ public final class Constants {
     public static final int A_FRAME_LED_CHANNEL = 0;
     public static final int TURBOTAKE_LED_CHANNEL = 1;
 
+    public static final double FALCON_500_NOMINAL_VOLTAGE = 12.0;
+    public static final double TALON_FX_TICKS_PER_ROTATION = 2048.0;
 }
