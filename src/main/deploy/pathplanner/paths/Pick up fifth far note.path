@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "6 Front Piece",
   "previewStartingState": {
-    "rotation": 13.32,
+    "rotation": 13.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

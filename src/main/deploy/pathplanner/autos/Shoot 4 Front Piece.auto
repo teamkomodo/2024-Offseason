@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aim"
+            "name": "aimSpeaker"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aim"
+            "name": "aimSpeaker"
           }
         },
         {
@@ -86,7 +86,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aim"
+            "name": "aimSpeaker"
           }
         },
         {

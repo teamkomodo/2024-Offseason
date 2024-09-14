@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.JointSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.BlinkinPattern;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static frc.robot.Constants.*;
 
+import java.lang.module.FindException;
 import java.util.Map;
 
 public class RobotContainer {    
@@ -37,6 +39,7 @@ public class RobotContainer {
     private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final JointSubsystem jointSubsystem = new JointSubsystem();
     private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
     public RobotContainer() {
@@ -88,7 +91,7 @@ public class RobotContainer {
     private void registerNamedCommands() {
         NamedCommands.registerCommand("rampUpSpeaker", Commands.runOnce(() -> shooterSubsystem.rampUpShooter()));
         NamedCommands.registerCommand("intakeNote", Commands.runOnce(() -> intakeSubsystem.intake()));
-        NamedCommands.registerCommand("aim", Commands.runOnce(() -> getAutonomousCommand())); // FIXME: Add the aim command
+        NamedCommands.registerCommand("aimSpeaker", Commands.runOnce(() -> getAutonomousCommand())); // FIXME: Add the aim command
         NamedCommands.registerCommand("shootNote", Commands.runOnce(() -> intakeSubsystem.shoot()));
     }
 }

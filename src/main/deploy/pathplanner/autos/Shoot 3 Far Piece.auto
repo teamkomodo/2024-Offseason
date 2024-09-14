@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6700651803056409,
-      "y": 4.3891964365542915
+      "x": 0.6933452953924437,
+      "y": 4.42669621430541
     },
-    "rotation": -59.17233770013024
+    "rotation": -59.170000000000016
   },
   "command": {
     "type": "sequential",
@@ -44,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aim"
+            "name": "aimSpeaker"
           }
         },
         {
@@ -74,7 +74,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aim"
+            "name": "aimSpeaker"
           }
         },
         {
