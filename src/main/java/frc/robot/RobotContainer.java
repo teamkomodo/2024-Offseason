@@ -48,7 +48,7 @@ public class RobotContainer {
         driverRT.onFalse(drivetrainSubsystem.disableSlowModeCommand());
 
         Trigger driverLB = driverController.leftBumper();
-       driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
+        driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
 
         driverA.onTrue(drivetrainSubsystem.driveSysIdRoutineCommand());
         driverB.onTrue(drivetrainSubsystem.steerSysIdRoutineCommand());
