@@ -126,4 +126,6 @@ public final class Constants {
     public static final int A_FRAME_LED_CHANNEL = 0;
     public static final int TURBOTAKE_LED_CHANNEL = 1;
 
+    public static final double FALCON_500_NOMINAL_VOLTAGE = 12.0;
+    public static final double TALON_FX_TICKS_PER_ROTATION = 2048.0;
 }
