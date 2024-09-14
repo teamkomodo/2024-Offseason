@@ -3,9 +3,8 @@
   "robotLength": 0.81,
   "holonomicMode": true,
   "pathFolders": [
-    "Center",
-    "Four-Piece",
-    "S-F5-F4"
+    "3 Far Piece",
+    "6 Front Piece"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.8,

@@ -125,11 +125,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command intake() {
-        return this.runOnce(() -> setIntakeDutyCycle(0.1));
+        return Commands.runEnd(() -> setIntakeDutyCycle(0.1), () -> setIntakeVelocity(0), this).until(() -> (getPieceLoaded()));
     }
 
     public Command eject() {
         return Commands.runEnd(() -> setIntakeDutyCycle(-0.1), () -> setIntakeDutyCycle(0), this).until(() -> (checkEjectStatus()));
+    }
+
+    public Command shoot() {
+        return Commands.runEnd(() -> setIntakeDutyCycle(0.1), () -> setIntakeDutyCycle(0), this).until(() -> (!getPieceLoaded()));
     }
 
     public void holdIntake() {

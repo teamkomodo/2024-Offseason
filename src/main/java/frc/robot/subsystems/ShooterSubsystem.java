@@ -13,6 +13,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.PIDGains;
 import frc.robot.util.Util;
@@ -98,6 +100,10 @@ public class ShooterSubsystem extends SubsystemBase {
         else if (type == ControlType.kPosition)
             motorPosition = value;
         shooterPidController.setReference(value, type);
+    }
+
+    public Command rampUpShooter() {
+        return Commands.runOnce(() -> setMotorDutyCycle(1));
     }
 
     public double getCurrent() {

@@ -5,7 +5,9 @@
 package frc.robot;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.BlinkinPattern;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static frc.robot.Constants.*;
 
+import java.util.Map;
+
 public class RobotContainer {    
 
     private final SendableChooser<Command> autoChooser;
@@ -31,12 +35,14 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(OPERATOR_XBOX_PORT);
 
     private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
     public RobotContainer() {
         configureBindings();
+        registerNamedCommands();
         autoChooser = AutoBuilder.buildAutoChooser();
-
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }    
     
@@ -48,7 +54,7 @@ public class RobotContainer {
         driverRT.onFalse(drivetrainSubsystem.disableSlowModeCommand());
 
         Trigger driverLB = driverController.leftBumper();
-       driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
+        driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
 
         driverA.onTrue(drivetrainSubsystem.driveSysIdRoutineCommand());
         driverB.onTrue(drivetrainSubsystem.steerSysIdRoutineCommand());
@@ -77,5 +83,12 @@ public class RobotContainer {
         // if(autoChooser != null) {
         //    return autoChooser.getSelected();
         // }
+    }
+
+    private void registerNamedCommands() {
+        NamedCommands.registerCommand("rampUpSpeaker", Commands.runOnce(() -> shooterSubsystem.rampUpShooter()));
+        NamedCommands.registerCommand("intakeNote", Commands.runOnce(() -> intakeSubsystem.intake()));
+        NamedCommands.registerCommand("aim", Commands.runOnce(() -> getAutonomousCommand())); // FIXME: Add the aim command
+        NamedCommands.registerCommand("shootNote", Commands.runOnce(() -> intakeSubsystem.shoot()));
     }
 }
