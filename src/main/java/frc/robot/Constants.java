@@ -81,7 +81,7 @@ public final class Constants {
 
     public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
     public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
-    public static final int FONT_LEFT_STEER_ENCODER_ID = 10;
+    public static final int FRONT_LEFT_STEER_ENCODER_ID = 10;
     public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(294.1);
 
     public static final double WHEEL_DIAMETER = 0.1016;
@@ -126,5 +126,12 @@ public final class Constants {
 
     public static final int A_FRAME_LED_CHANNEL = 0;
     public static final int TURBOTAKE_LED_CHANNEL = 1;
+
+
+
+
+
+    
+
 
 }
