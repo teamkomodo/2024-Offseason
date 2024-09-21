@@ -145,7 +145,7 @@ public class FalconSwerveModule implements SwerveModule{
         steerConfig.kI = steerGains.i;
         steerConfig.kD = steerGains.d;
         
-        steerMotor.getConfigurator().apply(steerConfig, 0.050);
+        steerMotor.getConfigurator().apply(steerConfig);
         
         
 
@@ -234,8 +234,8 @@ public class FalconSwerveModule implements SwerveModule{
         final double driveFeedforward = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
         //System.out.println(driveFeedforward);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
-        steerMotor.setVoltage((desiredState.angle.getRadians()-steerMotor.getPosition().getValueAsDouble())/3);
-
+        //steerMotor.setVoltage((desiredState.angle.getRadians()-steerMotor.getPosition().getValueAsDouble()%5));
+        steerMotor.setPosition(desiredState.angle.getRadians());
     }
 
     @Override
