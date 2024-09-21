@@ -91,13 +91,15 @@ public class FalconSwerveModule implements SwerveModule{
         driveController = new PIDController(drivePIDGains.p, drivePIDGains.i, drivePIDGains.d);
         driveFeedforward = new SimpleMotorFeedforward(driveFFGains.s, driveFFGains.v, driveFFGains.a);
 
+        
 
         steerAbsoluteEncoder.getConfigurator().apply(new MagnetSensorConfigs()
             .withMagnetOffset(steerOffset / (2 * Math.PI))
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)); // CANCoder outputs between (-0.5, 0.5)
 
+        
 
-        configureMotors();
+        configureMotors(steerPIDGains);
         
         
         // Telemetry
@@ -129,31 +131,23 @@ public class FalconSwerveModule implements SwerveModule{
         steerkDEntry.set(steerPIDGains.d);
     }
 
-    private void configureMotors() {
+    private void configureMotors(PIDGains steerGains) {
 
         //driveMotor.setSensorPhase(true); // invert the sensor
         driveMotor.setInverted(true); // invert the motor
 
-        driveMotor.setInverted(false);
-
-        driveConfig.kP = driveP;
-        driveConfig.kI = driveI;
-        driveConfig.kD = driveD;
-        
-        driveMotor.getConfigurator().apply(steerConfig, 0.050);
-        driveMotor.setPosition(Math.toRadians(steerAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()) / steerPositionConversionFactor);
-        driveOut.OverrideBrakeDurNeutral = true;
-
-
+        double wheelPositionConversionFactor = Math.PI * WHEEL_DIAMETER * DRIVE_REDUCTION; // motor rotations -> wheel travel in meters
+    
         steerMotor.setInverted(false);
+        steerOut.OverrideBrakeDurNeutral = true;
 
-        steerConfig.kP = steerP;
-        steerConfig.kI = steerI;
-        steerConfig.kD = steerD;
+        steerConfig.kP = steerGains.p;
+        steerConfig.kI = steerGains.i;
+        steerConfig.kD = steerGains.d;
         
         steerMotor.getConfigurator().apply(steerConfig, 0.050);
-        steerMotor.setPosition(Math.toRadians(steerAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()) / steerPositionConversionFactor);
-        steerOut.OverrideBrakeDurNeutral = true;
+        
+        
 
     }
 
@@ -198,53 +192,32 @@ public class FalconSwerveModule implements SwerveModule{
         return new SwerveModuleState(getDriveVelocity(), getModuleRotation());
     }
 
+    public SwerveModuleState getDesiredState(){
+        return desiredState;
+    }
+
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(getDrivePosition(), getModuleRotation());
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
-
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getModuleRotation());
         this.desiredState = optimizedState;
-    }
-
-    //@SuppressWarnings(value = { "unused" })
-    private void correctRelativeEncoder() {
-
-        double absoluteAngle = Math.toRadians(steerAbsoluteEncoder.getAbsolutePosition().getValueAsDouble());
-        double currentAngleMod = MathUtil.angleModulus(getModuleRotation().getRadians());
-        double adjustedAngle = absoluteAngle + getSteerPosition() - currentAngleMod;
-
-        if(absoluteAngle - currentAngleMod > Math.PI) {
-            adjustedAngle -= 2.0 * Math.PI;
-        }else if(absoluteAngle - currentAngleMod < -Math.PI) {
-            adjustedAngle += 2.0 * Math.PI;
-        }
-
-        double delta = adjustedAngle - getSteerPosition();
-        if(delta > Math.PI)
-            delta -= 2 * Math.PI;
-
-        if(delta < -Math.PI)
-            delta += 2 * Math.PI;
-
-        relativeSteerAdjustment += delta * relativeSteerAdjustmentFactor;
 
     }
+
 
     public Rotation2d getModuleRotation() {
-        return new Rotation2d(getSteerPosition() + relativeSteerAdjustment);
+        return new Rotation2d(steerMotor.getPosition().getValueAsDouble() + relativeSteerAdjustment);
         // return new Rotation2d(MathUtil.angleModulus(steerRelativeEncoder.getPosition() + steerOffset + relativeSteerAdjustment)); // Handled by 
     }
 
     public Rotation2d getAbsoluteModuleRotation() {
-        return new Rotation2d(MathUtil.angleModulus(Math.toRadians(steerAbsoluteEncoder.getAbsolutePosition().getValueAsDouble())));
+        return new Rotation2d(steerMotor.getPosition().getValueAsDouble() + relativeSteerAdjustment);
         // return new Rotation2d(MathUtil.angleModulus(Math.toRadians(steerAbsoluteEncoder.getAbsolutePosition()) + steerOffset));
     }
 
-    private double getSteerPosition() {
-        return steerMotor.getRotorPosition().getValueAsDouble() * steerPositionConversionFactor;
-    }
+    
     
     private double getDrivePosition() {
         return driveMotor.getRotorPosition().getValueAsDouble() * drivePositionConversionFactor;
@@ -254,9 +227,6 @@ public class FalconSwerveModule implements SwerveModule{
         return driveMotor.getRotorPosition().getValueAsDouble() * driveVelocityConversionFactor;
     }
 
-    public SwerveModuleState getDesiredState(){
-        return desiredState;
-    }
 
     @Override
     public void periodic() {
@@ -264,7 +234,7 @@ public class FalconSwerveModule implements SwerveModule{
         final double driveFeedforward = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
         //System.out.println(driveFeedforward);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
-        steerMotor.setPosition(desiredState.angle.getRadians());
+        steerMotor.setVoltage((desiredState.angle.getRadians()-steerMotor.getPosition().getValueAsDouble())/3);
 
     }
 
