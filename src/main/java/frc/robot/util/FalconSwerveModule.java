@@ -249,28 +249,20 @@ public class FalconSwerveModule implements SwerveModule{
         return driveMotor.getRotorPosition().getValueAsDouble() * driveVelocityConversionFactor;
     }
 
-    private void setAngle(SwerveModuleState desiredState){
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (MAX_ATTAINABLE_VELOCITY * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
-
-        anglePosition.Position = (desiredState.angle.getDegrees() / 180) * 12.8;
-        steerMotor.setControl(anglePosition);
-        lastAngle = angle;
-        lastAngle = desiredState.angle;
-    }
-
-
 
     //*Added Periodic
     @Override
     public void periodic() {
         final double driveOutput = driveController.calculate(driveMotor.getVelocity().getValueAsDouble(), desiredState.speedMetersPerSecond);
         final double driveFeedforward = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
+        anglePosition.Position = (desiredState.angle.getDegrees() / 180) * 12.8;
         //System.out.println(driveFeedforward);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         
         
         //steerMotor.setVoltage((desiredState.angle.getRadians()-steerMotor.getPosition().getValueAsDouble()%(2*Math.PI)));
-        setAngle(desiredState);
+        //setAngle(desiredState);
+        steerMotor.setControl(anglePosition);
 
         //System.out.println(desiredState.angle.getRadians());
     }

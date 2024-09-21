@@ -66,22 +66,22 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
     public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
     public static final int BACK_RIGHT_STEER_ENCODER_ID = 8;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0);
+    public static final double BACK_RIGHT_STEER_OFFSET = 0.014;
 
     public static final int BACK_LEFT_DRIVE_MOTOR_ID = 2;
     public static final int BACK_LEFT_STEER_MOTOR_ID = 3;
     public static final int BACK_LEFT_STEER_ENCODER_ID = 9;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0);
+    public static final double BACK_LEFT_STEER_OFFSET = 0.571;
 
     public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
     public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
     public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0);
+    public static final double FRONT_RIGHT_STEER_OFFSET = 0
 
     public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
     public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
     public static final int FONT_LEFT_STEER_ENCODER_ID = 10;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0);
+    public static final double FRONT_LEFT_STEER_OFFSET = -0.078;
 
     public static final double WHEEL_DIAMETER = 0.1016; // still correct?
 
