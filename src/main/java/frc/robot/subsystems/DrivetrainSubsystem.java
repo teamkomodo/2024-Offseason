@@ -120,10 +120,10 @@ public class DrivetrainSubsystem implements Subsystem {
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftPosition, frontRightPosition, backLeftPosition, backRightPosition);
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final ProfiledPIDController rotationController = new ProfiledPIDController(3, 1.0e-5, 1.0e-1, new TrapezoidProfile.Constraints(ANGULAR_VELOCITY_CONSTRAINT, ANGULAR_ACCEL_CONSTRAINT));
+    private final ProfiledPIDController rotationController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(ANGULAR_VELOCITY_CONSTRAINT, ANGULAR_ACCEL_CONSTRAINT));
     private final HolonomicDriveController driveController = new HolonomicDriveController(
-        new PIDController(1, 0, 0),
-        new PIDController(1, 0, 0),
+        new PIDController(0, 0, 0),
+        new PIDController(0, 0, 0),
         rotationController);
     
     private final AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
@@ -154,9 +154,9 @@ public class DrivetrainSubsystem implements Subsystem {
                 FRONT_LEFT_STEER_MOTOR_ID,
                 FONT_LEFT_STEER_ENCODER_ID,
                 FRONT_LEFT_STEER_OFFSET,
-                new PIDGains(1.0, 0, 0),
-                new PIDGains(1, 1.0e-6, 0),
-                new FFGains(0.19861, 3.2379, 0.562),
+                new PIDGains(1, 0, 0),
+                new PIDGains(0,0, 0),
+                new FFGains(0.01, 0.4, 0.05),
                 drivetrainNT.getSubTable("frontleft"));
 
         frontRight = new FalconSwerveModule(
@@ -164,9 +164,9 @@ public class DrivetrainSubsystem implements Subsystem {
                 FRONT_RIGHT_STEER_MOTOR_ID,
                 FRONT_RIGHT_STEER_ENCODER_ID,
                 FRONT_RIGHT_STEER_OFFSET,
-                new PIDGains(1.0, 0, 0),
-                new PIDGains(1, 1.0e-6, 0),
-                new FFGains(0.18406, 3.2722, 0.40914),
+                new PIDGains(1, 0, 0),
+                new PIDGains(0,0, 0),
+                new FFGains(0.01, 0.4, 0.05),
                 drivetrainNT.getSubTable("frontright"));
 
         backLeft = new FalconSwerveModule(
@@ -174,9 +174,9 @@ public class DrivetrainSubsystem implements Subsystem {
                 BACK_LEFT_STEER_MOTOR_ID,
                 BACK_LEFT_STEER_ENCODER_ID,
                 BACK_LEFT_STEER_OFFSET,
-                new PIDGains(1.0, 0, 0),
-                new PIDGains(1, 1.0e-6, 0),
-                new FFGains(0.17395, 3.286, 0.51328),
+                new PIDGains(1, 0, 0),
+                new PIDGains(0,0, 0),
+                new FFGains(0.01, 0.4, 0.05),
                 drivetrainNT.getSubTable("backleft"));
 
         backRight = new FalconSwerveModule(
@@ -184,9 +184,9 @@ public class DrivetrainSubsystem implements Subsystem {
                 BACK_RIGHT_STEER_MOTOR_ID,
                 BACK_RIGHT_STEER_ENCODER_ID,
                 BACK_RIGHT_STEER_OFFSET,
-                new PIDGains(1.0, 0, 0),
-                new PIDGains(1, 1.0e-6, 0),
-                new FFGains(0.17731, 3.2446, 0.41604),
+                new PIDGains(1, 0, 0),
+                new PIDGains(0,0, 0),
+                new FFGains(0.01, 0.4, 0.05),
                 drivetrainNT.getSubTable("backright"));
 
         poseEstimator = new SwerveDrivePoseEstimator(

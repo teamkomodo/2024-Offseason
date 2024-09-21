@@ -85,7 +85,8 @@ public class FalconSwerveModule implements SwerveModule{
         this.steerMotor = new TalonFX(steerMotorId);
         this.steerAbsoluteEncoder = new CANcoder(steerAbsoluteEncoderId);
         this.desiredState = new SwerveModuleState(0.0, Rotation2d.fromRadians(0));
-
+        
+        
 
         driveController = new PIDController(drivePIDGains.p, drivePIDGains.i, drivePIDGains.d);
         driveFeedforward = new SimpleMotorFeedforward(driveFFGains.s, driveFFGains.v, driveFFGains.a);
@@ -204,24 +205,7 @@ public class FalconSwerveModule implements SwerveModule{
     public void setDesiredState(SwerveModuleState desiredState) {
 
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getModuleRotation());
-
-
-        driveMotor.setControl(driveOut);
-
-        double currentAngleMod = MathUtil.angleModulus(getModuleRotation().getRadians());
-        double adjustedAngle = optimizedState.angle.getRadians() + getModuleRotation().getRadians() - currentAngleMod;
-
-        if(optimizedState.angle.getRadians() - currentAngleMod > Math.PI) {
-            adjustedAngle -= 2.0 * Math.PI;
-        }else if(optimizedState.angle.getRadians() - currentAngleMod < -Math.PI) {
-            adjustedAngle += 2.0 * Math.PI;
-        }
-        adjustedDesiredAngle = adjustedAngle;
-        steerMotor.setControl(steerOut);
-        //steerMotor.set(TalonFXControlMode.Position, 0);
         this.desiredState = optimizedState;
-
-        //correctRelativeEncoder();
     }
 
     //@SuppressWarnings(value = { "unused" })
@@ -281,6 +265,7 @@ public class FalconSwerveModule implements SwerveModule{
         //System.out.println(driveFeedforward);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         steerMotor.setPosition(desiredState.angle.getRadians());
+
     }
 
     @Override
