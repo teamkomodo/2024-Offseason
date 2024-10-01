@@ -218,8 +218,10 @@ public class FalconSwerveModule implements SwerveModule{
 
     //*Changed setDesiredState to the one used in NeoSwerveModule, which helps with Swerve Jitteriness and Gear Grinding
     public void setDesiredState(SwerveModuleState desiredState) {
-        SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getModuleRotation());
-        this.desiredState = optimizedState;
+        //System.out.println(desiredState.angle.getDegrees());
+        //SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, getModuleRotation());
+        //this.desiredState = optimizedState;
+        this.desiredState = desiredState;
 
     }
 
@@ -255,7 +257,7 @@ public class FalconSwerveModule implements SwerveModule{
     public void periodic() {
         final double driveOutput = driveController.calculate(driveMotor.getVelocity().getValueAsDouble(), desiredState.speedMetersPerSecond);
         final double driveFeedforward = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
-        anglePosition.Position = (desiredState.angle.getDegrees() / 180) * 12.8;
+        anglePosition.Position = (desiredState.angle.getDegrees() / 360) * 12.8;
         //System.out.println(driveFeedforward);
         driveMotor.setVoltage(driveOutput + driveFeedforward);
         
@@ -264,7 +266,7 @@ public class FalconSwerveModule implements SwerveModule{
         //setAngle(desiredState);
         steerMotor.setControl(anglePosition);
 
-        //System.out.println(desiredState.angle.getRadians());
+        System.out.println(desiredState.angle.getDegrees());
     }
 
     //*Added for SysID

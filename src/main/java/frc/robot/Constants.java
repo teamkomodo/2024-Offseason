@@ -76,7 +76,7 @@ public final class Constants {
     public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
     public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
     public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
-    public static final double FRONT_RIGHT_STEER_OFFSET = 0
+    public static final double FRONT_RIGHT_STEER_OFFSET = 0.5;
 
     public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
     public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
