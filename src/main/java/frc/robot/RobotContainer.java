@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -22,7 +23,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static frc.robot.Constants.*;
 
+import java.lang.reflect.Field;
+
 public class RobotContainer {    
+    private final Field2d field2d = new Field2d();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -30,7 +34,7 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(DRIVER_XBOX_PORT); 
     private final CommandXboxController operatorController = new CommandXboxController(OPERATOR_XBOX_PORT);
 
-    private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
+    private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem(field2d);
     private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
     public RobotContainer() {
