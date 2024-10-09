@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.JointSubsystem;
@@ -36,7 +37,7 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(DRIVER_XBOX_PORT); 
     private final CommandXboxController operatorController = new CommandXboxController(OPERATOR_XBOX_PORT);
 
-    private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
+    //private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final JointSubsystem jointSubsystem = new JointSubsystem();
@@ -51,31 +52,17 @@ public class RobotContainer {
     
     private void configureBindings() {
 
-        Trigger driverRT = driverController.rightTrigger();
+        Trigger xButton = operatorController.x();
+        Trigger yButton = operatorController.y();
+        Trigger aButton = operatorController.a();
+        Trigger bButton = operatorController.b();
 
-        driverRT.onTrue(drivetrainSubsystem.enableSlowModeCommand());
-        driverRT.onFalse(drivetrainSubsystem.disableSlowModeCommand());
+        xButton.onTrue(intakeSubsystem.intake());
+        yButton.onTrue(intakeSubsystem.eject());
+        aButton.onTrue(shooterSubsystem.rampUpShooter());
+        bButton.onTrue(new ShootCommand(intakeSubsystem, shooterSubsystem, jointSubsystem));
 
-        Trigger driverLB = driverController.leftBumper();
-        driverLB.onTrue(drivetrainSubsystem.zeroGyroCommand());
-
-        driverA.onTrue(drivetrainSubsystem.driveSysIdRoutineCommand());
-        driverB.onTrue(drivetrainSubsystem.steerSysIdRoutineCommand());
-
-        // deadband and curves are applied in command
-        drivetrainSubsystem.setDefaultCommand(
-            drivetrainSubsystem.joystickDriveCommand(
-                () -> ( -driverController.getLeftY() ), // -Y on left joystick is +X for robot
-                () -> ( -driverController.getLeftX() ), // -X on left joystick is +Y for robot
-                () -> ( -driverController.getRightX() ) // -X on right joystick is +Z for robot
-            )
-        );
     }
-
-    Trigger driverA = driverController.a();
-    Trigger driverB = driverController.b();
-
-    
 
     public void teleopInit() {
 
@@ -89,9 +76,6 @@ public class RobotContainer {
     }
 
     private void registerNamedCommands() {
-        NamedCommands.registerCommand("rampUpSpeaker", Commands.runOnce(() -> shooterSubsystem.rampUpShooter()));
-        NamedCommands.registerCommand("intakeNote", Commands.runOnce(() -> intakeSubsystem.intake()));
-        NamedCommands.registerCommand("aimSpeaker", Commands.runOnce(() -> getAutonomousCommand())); // FIXME: Add the aim command
-        NamedCommands.registerCommand("shootNote", Commands.runOnce(() -> intakeSubsystem.shoot()));
+        
     }
 }

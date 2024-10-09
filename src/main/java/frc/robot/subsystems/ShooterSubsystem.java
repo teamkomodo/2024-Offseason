@@ -103,7 +103,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command rampUpShooter() {
-        return Commands.runOnce(() -> setMotorDutyCycle(1));
+        return Commands.runOnce(() -> setMotorDutyCycle(0.1));
+    }
+
+    public Command stopShooter() {
+        return Commands.runOnce(() -> setMotorDutyCycle(0));
     }
 
     public double getCurrent() {

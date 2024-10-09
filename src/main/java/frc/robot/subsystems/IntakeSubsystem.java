@@ -102,6 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         if(noteLoaded && !noteLoadedAtLastCheck)
             holdIntake();
+        
         noteLoadedAtLastCheck = noteLoaded;
         noteIntakedAtLastCheck = noteIntaked;
     }
@@ -133,6 +134,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command shoot() {
+        if(!noteLoaded)
+            return null;
         return Commands.runEnd(() -> setIntakeDutyCycle(0.1), () -> setIntakeDutyCycle(0), this).until(() -> (!getPieceLoaded()));
     }
 

@@ -33,19 +33,19 @@ public final class Constants {
 
     // Shooter
     // //Shooter
-    public static final int SHOOTER_MOTOR_1_ID = 4;
-    public static final int SHOOTER_MOTOR_2_ID = 3;
+    public static final int SHOOTER_MOTOR_1_ID = 25;
+    public static final int SHOOTER_MOTOR_2_ID = 26;
 
     //Intake
-    public static final int INTAKE_MOTOR_1_ID = 0; // FIXME: need proper defenition
-    public static final int INTAKE_MOTOR_2_ID = 0; // FIXME: need proper defenition
-    public static final int INTAKE_BEAM_BREAK_PORT = 0; // FIXME: need proper defenition
-    public static final int SHOOTER_BEAM_BREAK_PORT = 0; // FIXME: need proper defenition
+    public static final int INTAKE_MOTOR_1_ID = 21; // FIXME: need proper defenition
+    public static final int INTAKE_MOTOR_2_ID = 22; // FIXME: need proper defenition
+    public static final int INTAKE_BEAM_BREAK_PORT = 2; // FIXME: need proper defenition
+    public static final int SHOOTER_BEAM_BREAK_PORT = 1; // FIXME: need proper defenition
     public static final double INTAKE_SPEED = -0.5;
 
     // Joint
-    public static final int JOINT_MOTOR_1_ID = 0; // FIXME: Change motor ID
-    public static final int JOINT_MOTOR_2_ID = 0; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_1_ID = 23; // FIXME: Change motor ID
+    public static final int JOINT_MOTOR_2_ID = 24; // FIXME: Change motor ID
     public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
 
     public static final double JOINT_STOW_POSITION = 0.0;
@@ -97,6 +97,7 @@ public final class Constants {
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 
     public static final double MAX_ATTAINABLE_VELOCITY = 3.8;
+    public static final double MAX_LINEAR_VELOCITY = 0;
 
     public static final double LINEAR_VELOCITY_CONSTRAINT = MAX_ATTAINABLE_VELOCITY;
     public static final double LINEAR_ACCEL_CONSTRAINT = 12.0;
