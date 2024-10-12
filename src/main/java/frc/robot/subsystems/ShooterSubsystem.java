@@ -32,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final RelativeEncoder shooterEncoder;
     private final CANSparkMax shooterMotor2;
 
-    private PIDGains pid = new PIDGains(1, 0, 0, 0, 1, 0.00022, -1, 1);
+    private PIDGains pid = new PIDGains(0.7, 0, 0.1, 0, 1, 0.00022, -1, 1);
 
     private double motorSpeed = 0;
     private double motorPosition = 0;
@@ -44,7 +44,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
         shooterMotor = new CANSparkMax(SHOOTER_MOTOR_1_ID, MotorType.kBrushless);
         shooterMotor.setInverted(false);
-        shooterMotor.setSmartCurrentLimit(50);
+        shooterMotor.setSmartCurrentLimit(190);
 
         shooterEncoder = shooterMotor.getEncoder();
         shooterEncoder.setPosition(0);
@@ -70,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void updateTable() {
-        motorSpeedPublisher.set(motorSpeed);
+        motorSpeedPublisher.set(shooterEncoder.getVelocity());
         motorPositionPublisher.set(motorPosition);
     }
 
@@ -103,7 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command rampUpShooter() {
-        return Commands.runOnce(() -> setMotorDutyCycle(0.1));
+        return Commands.runOnce(() -> setMotorDutyCycle(0.8));
     }
 
     public Command stopShooter() {

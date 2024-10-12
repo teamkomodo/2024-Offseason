@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.PIDGains;
@@ -25,6 +26,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DoublePublisher intakeVelocityPublisher = NetworkTableInstance.getDefault().getTable("intake").getDoubleTopic("intakeDutyCycle").publish();
     private final BooleanPublisher pieceIntakedPublisher = NetworkTableInstance.getDefault().getTable("intake").getBooleanTopic("pieceIntaked").publish();
     private final BooleanPublisher pieceLoadedPublisher = NetworkTableInstance.getDefault().getTable("intake").getBooleanTopic("pieceInShooter").publish();
+    private final BooleanPublisher pieceIntakedSensorPublisher = NetworkTableInstance.getDefault().getTable("intake").getBooleanTopic("pieceIntakedSensor").publish();
+    private final BooleanPublisher pieceLoadedSensorPublisher = NetworkTableInstance.getDefault().getTable("intake").getBooleanTopic("pieceInShooterSensor").publish();
 
     private final CANSparkMax intakeMotor;
     private final CANSparkMax intakeMotor2;
@@ -33,6 +36,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final DigitalInput noteIntakedSensor;
     private final DigitalInput noteLoadedSensor;
+
+    public String currentCommand = "idle";
 
     private PIDGains pid = new PIDGains(1, 0, 0, 1, 0, 0, -1, 1);
     
@@ -48,33 +53,25 @@ public class IntakeSubsystem extends SubsystemBase {
     private double currentFilterConstant = 0.1;
     private double intakeDutyCycle;
 
-    private boolean noteIntaked;
-    private boolean noteIntakedAtLastCheck;
-    private boolean noteLoaded;
-    private boolean noteLoadedAtLastCheck;
+    public boolean noteIntaked;
+    public boolean noteLoaded;
     
     public IntakeSubsystem() {
         intakeMotor = new CANSparkMax(INTAKE_MOTOR_1_ID, MotorType.kBrushless); //FIXME: find motor id
-        intakeMotor.setSmartCurrentLimit(30);
-        intakeMotor.setInverted(false);
+        intakeMotor.setSmartCurrentLimit(90);
+        intakeMotor.setInverted(true);
 
         intakeMotor2 = new CANSparkMax(INTAKE_MOTOR_2_ID, MotorType.kBrushless); //FIXME: find motor id
-        intakeMotor2.setInverted(true);
+        intakeMotor2.setInverted(false);
         intakeMotor2.follow(intakeMotor, true);
 
-        noteIntakedSensor = new DigitalInput(INTAKE_BEAM_BREAK_PORT); //FIXME: find port number
-        noteLoadedSensor = new DigitalInput(SHOOTER_BEAM_BREAK_PORT); //FIXME: find port number
-
+        noteIntakedSensor = new DigitalInput(1); //FIXME: find port number
+        noteLoadedSensor = new DigitalInput(2); //FIXME: find port number
         intakeEncoder = intakeMotor.getEncoder();
         intakeEncoder.setPosition(0);
 
         intakePidController = intakeMotor.getPIDController();
         Util.setPidController(intakePidController, pid);
-
-        noteIntaked = getNoteDetection(noteIntakedSensor);
-        noteIntakedAtLastCheck = false;
-        noteLoaded = getNoteDetection(noteLoadedSensor);
-        noteLoadedAtLastCheck = false;
 
     }
 
@@ -94,27 +91,31 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void checkSensors() {
-        noteIntaked = getNoteDetection(noteIntakedSensor);
-        noteLoaded = getNoteDetection(noteLoadedSensor);
+        boolean currentNoteIntaked = getNoteDetection(noteIntakedSensor);
+        boolean currentNoteLoaded = getNoteDetection(noteLoadedSensor);
 
-        if(noteIntaked && !noteIntakedAtLastCheck && intakeEncoder.getVelocity() > 0) {
-            //LED blinkers and controller vibrations
+        if(currentNoteIntaked && getIntakeVelocity() > 0) {
+            noteIntaked = true;
         }
-        if(noteLoaded && !noteLoadedAtLastCheck)
-            holdIntake();
-        
-        noteLoadedAtLastCheck = noteLoaded;
-        noteIntakedAtLastCheck = noteIntaked;
-    }
 
-    public boolean checkEjectStatus() {
-        return !noteIntaked && noteIntakedAtLastCheck && intakeEncoder.getVelocity() < 0;
+        if(currentNoteLoaded && getIntakeVelocity() > 0 && currentCommand == "intake") {
+            holdIntake();
+            noteIntaked = true;
+            noteLoaded = true;
+        }
+        
+        if(!currentNoteIntaked && currentCommand == "eject") {
+            noteLoaded = false;
+            noteIntaked = false;
+        }
     }
 
     public void updateTelemetry() {
-        pieceIntakedPublisher.set(noteIntaked);
-        pieceLoadedPublisher.set(noteLoaded);
-        intakeVelocityPublisher.set(intakeDutyCycle);
+        pieceIntakedPublisher.set(getPieceIntaked());
+        pieceLoadedPublisher.set(getPieceLoaded());
+        pieceIntakedSensorPublisher.set(getNoteDetection(noteIntakedSensor));
+        pieceLoadedSensorPublisher.set(getNoteDetection(noteLoadedSensor));
+        intakeVelocityPublisher.set(intakeEncoder.getVelocity());
     }
 
     public void setIntakeVelocity(double velocity) {
@@ -122,24 +123,32 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     
     public void setIntakeDutyCycle(double dutyCycle) {
-        setMotor(dutyCycle, ControlType.kDutyCycle);
+        intakePidController.setReference(dutyCycle, ControlType.kDutyCycle);
+        intakeDutyCycle = dutyCycle;
     }
 
     public Command intake() {
-        return Commands.runEnd(() -> setIntakeDutyCycle(0.1), () -> setIntakeVelocity(0), this).until(() -> (getPieceLoaded()));
+        if(!noteLoaded) {
+            currentCommand = "intake";
+            return Commands.runEnd(() -> setIntakeDutyCycle(0.8), () -> {setIntakeDutyCycle(0); noteLoaded = true; noteIntaked = true;}).until(() -> getNoteDetection(noteLoadedSensor));
+        } else {
+            return Commands.runOnce(() -> holdIntake());
+        }
     }
 
     public Command eject() {
-        return Commands.runEnd(() -> setIntakeDutyCycle(-0.1), () -> setIntakeDutyCycle(0), this).until(() -> (checkEjectStatus()));
-    }
-
-    public Command shoot() {
-        if(!noteLoaded)
-            return null;
-        return Commands.runEnd(() -> setIntakeDutyCycle(0.1), () -> setIntakeDutyCycle(0), this).until(() -> (!getPieceLoaded()));
+        currentCommand = "eject";
+        return new SequentialCommandGroup(
+            Commands.runOnce(() -> setIntakeDutyCycle(-0.5)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> holdIntake()),
+            Commands.runOnce(() -> {noteIntaked = false;}),
+            Commands.runOnce(() -> {noteLoaded = false;})
+        );
     }
 
     public void holdIntake() {
+        currentCommand = "idle";
         setMotor(intakeEncoder.getPosition(), ControlType.kPosition);
     }
 
@@ -149,20 +158,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakePidController.setReference(value, type);
     }
 
-    // public Command intake() {
-    //     return Commands.sequence(
-    //         Commands.waitUntil(() -> (!getHasPieceReady())),
-    //         Commands.runOnce(() -> setIntakeDutyCycle(INTAKE_SPEED)),
-    //         Commands.waitUntil(() -> getHasPieceReady()),
-    //         Commands.waitSeconds(0.005),
-    //         Commands.runOnce(() -> turnOffIntake())
-    //     ).finallyDo(() -> {
-    //         turnOffIntake();
-    //     });
-    // }
-
     public boolean getNoteDetection(DigitalInput beamBreak) {
-        return !beamBreak.get();
+        return beamBreak.get();
     }
 
     public boolean getPieceIntaked() {

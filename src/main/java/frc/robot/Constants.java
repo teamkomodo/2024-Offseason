@@ -49,9 +49,9 @@ public final class Constants {
     public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
 
     public static final double JOINT_STOW_POSITION = 0.0;
-    public static final double JOINT_SHOOTING_POSITION = 1.0;
+    public static final double JOINT_SHOOTING_POSITION = 8.667;
     public static final double JOINT_MIN_POSITION = 0.0;
-    public static final double JOINT_MAX_POSITION = 0.0;
+    public static final double JOINT_MAX_POSITION = 8.667;
 
     // Constants
 
@@ -59,59 +59,53 @@ public final class Constants {
     public static final double SPEAKER_SPEED = 3000;
     public static final double SPIN_RATIO = 0.3;
 
-    public static final double LINEAR_SLOW_MODE_MODIFIER = 0.5;
-    public static final double ANGULAR_SLOW_MODE_MODIFIER = 0.3;
-    public static final double DRIVETRAIN_WIDTH = 0.5271; // Distance between center of left and right swerve wheels in meters
-    public static final double DRIVETRAIN_LENGTH = 0.5271; // Distance between center of front and back swerve wheels in meters
+	public static final boolean FIELD_RELATIVE_DRIVE = true;
+	public static final double LINEAR_SLOW_MODE_MODIFIER = 0.5;
+	public static final double ANGULAR_SLOW_MODE_MODIFIER = 0.2;
+	
+	public static final double DRIVETRAIN_WIDTH = 0.4864163246;
+	public static final double DRIVETRAIN_LENGTH = 0.4079583662;
+	
+	public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
+	public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
+	public static final int FRONT_LEFT_STEER_ENCODER_ID = 10;
+	public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(293.1+180)+1.346;
+	
+	public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
+	public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
+	public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
+	public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(357.78)+1.422;
+	
+	public static final int BACK_LEFT_DRIVE_MOTOR_ID = 2;
+	public static final int BACK_LEFT_STEER_MOTOR_ID = 3;
+	public static final int BACK_LEFT_STEER_ENCODER_ID = 9;
+	public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(327.3)+9.235;
+	
+	public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
+	public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
+	public static final int BACK_RIGHT_STEER_ENCODER_ID = 8;
+	public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(170.75)+9.259;
+	
+	public static final double WHEEL_DIAMETER = 0.1016;
+	public static final double DRIVE_REDUCTION = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
+	public static final double STEER_REDUCTION = (15.0 / 32.0) * (10.0 / 60.0);
+	
+	public static final double MAX_MODULE_VELOCITY = 4.058; // physical maximum attainable speed of swerve modules
+	public static final double MAX_MODULE_ACCEL = 21; // physical maximum attainable accel of swerve modules
+	
+	public static final double MAX_ANGULAR_VELOCITY = 4.0 * Math.PI; // constraint for angular velocity
+	public static final double MAX_ANGULAR_ACCEL = 4.0 * Math.PI; // constraint for angular acceleration
+	
+	public static final double FALCON_500_NOMINAL_VOLTAGE = 12.0;
+	public static final double TALON_FX_TICKS_PER_ROTATION = 2048.0;
 
-    public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 0;
-    public static final int BACK_RIGHT_STEER_MOTOR_ID = 1;
-    public static final int BACK_RIGHT_STEER_ENCODER_ID = 8;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(168.65);
-
-    public static final int BACK_LEFT_DRIVE_MOTOR_ID = 2;
-    public static final int BACK_LEFT_STEER_MOTOR_ID = 3;
-    public static final int BACK_LEFT_STEER_ENCODER_ID = 9;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(327.3);
-
-    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 6;
-    public static final int FRONT_RIGHT_STEER_MOTOR_ID = 7;
-    public static final int FRONT_RIGHT_STEER_ENCODER_ID = 11;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(356.48);
-
-    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 4;
-    public static final int FRONT_LEFT_STEER_MOTOR_ID = 5;
-    public static final int FRONT_LEFT_STEER_ENCODER_ID = 10;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(294.1);
-
-    public static final double WHEEL_DIAMETER = 0.1016;
-
-    /**
-     * motor rotations -> wheel rotations
-     */
-    public static final double DRIVE_REDUCTION = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
-
-    /**
-     * motor rotations -> module rotations
-     */
-    public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
-
-    public static final double MAX_ATTAINABLE_VELOCITY = 3.8;
-    public static final double MAX_LINEAR_VELOCITY = 0;
-
-    public static final double LINEAR_VELOCITY_CONSTRAINT = MAX_ATTAINABLE_VELOCITY;
-    public static final double LINEAR_ACCEL_CONSTRAINT = 12.0;
-
-    public static final double ANGULAR_VELOCITY_CONSTRAINT = (LINEAR_VELOCITY_CONSTRAINT * Math.PI) / (DRIVETRAIN_WIDTH * DRIVETRAIN_WIDTH + DRIVETRAIN_LENGTH * DRIVETRAIN_LENGTH) * 0.8;
-    public static final double ANGULAR_ACCEL_CONSTRAINT = (LINEAR_ACCEL_CONSTRAINT * Math.PI) / (DRIVETRAIN_WIDTH * DRIVETRAIN_WIDTH + DRIVETRAIN_LENGTH * DRIVETRAIN_LENGTH);
-
-    public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-        new PIDConstants(2, 0, 0),
-        new PIDConstants(2, 0, 0),
-        MAX_ATTAINABLE_VELOCITY,
-        Math.sqrt(DRIVETRAIN_LENGTH*DRIVETRAIN_LENGTH + DRIVETRAIN_WIDTH*DRIVETRAIN_WIDTH)/2,
-        new ReplanningConfig()
-    );
+	public static HolonomicPathFollowerConfig holonomicPathFollowerConfig = new HolonomicPathFollowerConfig(
+			new PIDConstants(5.0, 0.0, 0.0), // Translation Constants
+			new PIDConstants(5.0, 0.0, 0.0), // Steering Constants
+			MAX_MODULE_VELOCITY,
+			Math.sqrt(DRIVETRAIN_WIDTH * DRIVETRAIN_WIDTH + DRIVETRAIN_LENGTH * DRIVETRAIN_LENGTH) / 2,
+			new ReplanningConfig(false, false)
+	);
 
     public static final BooleanSupplier ON_RED_ALLIANCE = () -> {
                 Optional<Alliance> alliance = DriverStation.getAlliance();

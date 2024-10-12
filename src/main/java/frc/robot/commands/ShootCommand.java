@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.JointSubsystem;
@@ -29,15 +30,21 @@ public class ShootCommand extends DynamicCommand {
         //         jointSubsystem.zeroJointCommand()
         //     );
         // }
-
+        // if(intakeSubsystem.getPieceLoaded()) {
         return new SequentialCommandGroup(
-            // jointSubsystem.shootingPositionCommand(),
-            // Commands.waitSeconds(0.3),
-            intakeSubsystem.shoot(),
-            Commands.waitSeconds(0.3),
-            shooterSubsystem.stopShooter()//,
-            // Commands.waitSeconds(0.3),
-            // jointSubsystem.stowPositionCommand()
+            jointSubsystem.shootingPositionCommand(),
+            Commands.runOnce(() -> intakeSubsystem.setIntakeDutyCycle(0.5)),
+            Commands.waitSeconds(0.7),
+            Commands.runOnce(() -> intakeSubsystem.holdIntake()),
+            Commands.runOnce(() -> intakeSubsystem.noteLoaded = false),
+            Commands.runOnce(() -> intakeSubsystem.noteIntaked = false),
+            shooterSubsystem.stopShooter(),
+            new WaitCommand(0.1),
+            jointSubsystem.stowPositionCommand(),
+            jointSubsystem.zeroJointCommand()
         );
+        // } else {
+        //     return null;
+        // }
     }
 }
