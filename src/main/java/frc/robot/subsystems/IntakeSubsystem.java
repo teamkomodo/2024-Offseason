@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.PIDGains;
 import frc.robot.util.Util;
@@ -21,6 +22,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import static frc.robot.Constants.*;
 
+import java.util.function.BooleanSupplier;
+
+import javax.lang.model.util.ElementScanner14;
+
 public class IntakeSubsystem extends SubsystemBase {
 
     private final DoublePublisher intakeVelocityPublisher = NetworkTableInstance.getDefault().getTable("intake").getDoubleTopic("intakeDutyCycle").publish();
@@ -34,8 +39,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final RelativeEncoder intakeEncoder;
     private final SparkPIDController intakePidController;
 
-    private final DigitalInput noteIntakedSensor;
-    private final DigitalInput noteLoadedSensor;
+    public final DigitalInput noteIntakedSensor;
+    public final DigitalInput noteLoadedSensor;
 
     public String currentCommand = "idle";
 
@@ -58,7 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
     
     public IntakeSubsystem() {
         intakeMotor = new CANSparkMax(INTAKE_MOTOR_1_ID, MotorType.kBrushless); //FIXME: find motor id
-        intakeMotor.setSmartCurrentLimit(90);
+        intakeMotor.setSmartCurrentLimit(80);
         intakeMotor.setInverted(true);
 
         intakeMotor2 = new CANSparkMax(INTAKE_MOTOR_2_ID, MotorType.kBrushless); //FIXME: find motor id
@@ -98,7 +103,13 @@ public class IntakeSubsystem extends SubsystemBase {
             noteIntaked = true;
         }
 
+        if(currentNoteLoaded && currentCommand == "idle") {
+            noteIntaked = true;
+            noteLoaded = true;
+        }
+
         if(currentNoteLoaded && getIntakeVelocity() > 0 && currentCommand == "intake") {
+            currentCommand = "idle";
             holdIntake();
             noteIntaked = true;
             noteLoaded = true;
@@ -113,9 +124,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void updateTelemetry() {
         pieceIntakedPublisher.set(getPieceIntaked());
         pieceLoadedPublisher.set(getPieceLoaded());
-        pieceIntakedSensorPublisher.set(getNoteDetection(noteIntakedSensor));
-        pieceLoadedSensorPublisher.set(getNoteDetection(noteLoadedSensor));
-        intakeVelocityPublisher.set(intakeEncoder.getVelocity());
+        pieceIntakedSensorPublisher.set(noteIntakedSensor.get());
+        pieceLoadedSensorPublisher.set(noteLoadedSensor.get());
+        intakeVelocityPublisher.set(intakeMotor.getOutputCurrent());
     }
 
     public void setIntakeVelocity(double velocity) {
@@ -124,26 +135,29 @@ public class IntakeSubsystem extends SubsystemBase {
     
     public void setIntakeDutyCycle(double dutyCycle) {
         intakePidController.setReference(dutyCycle, ControlType.kDutyCycle);
-        intakeDutyCycle = dutyCycle;
     }
 
     public Command intake() {
-        if(!noteLoaded) {
             currentCommand = "intake";
-            return Commands.runEnd(() -> setIntakeDutyCycle(0.8), () -> {setIntakeDutyCycle(0); noteLoaded = true; noteIntaked = true;}).until(() -> getNoteDetection(noteLoadedSensor));
-        } else {
-            return Commands.runOnce(() -> holdIntake());
-        }
+            return Commands.runEnd(() -> setIntakeDutyCycle(0.5), () -> {holdIntake();}).until(() -> getNoteDetection(noteLoadedSensor));
     }
 
     public Command eject() {
         currentCommand = "eject";
         return new SequentialCommandGroup(
             Commands.runOnce(() -> setIntakeDutyCycle(-0.5)),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(0.7),
             Commands.runOnce(() -> holdIntake()),
             Commands.runOnce(() -> {noteIntaked = false;}),
             Commands.runOnce(() -> {noteLoaded = false;})
+        );
+    }
+
+    public void unIntake() {
+        new SequentialCommandGroup(
+            Commands.runOnce(() -> setIntakeDutyCycle(-0.5)),
+            Commands.waitSeconds(0.4),
+            Commands.runOnce(() -> holdIntake())
         );
     }
 

@@ -103,7 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command rampUpShooter() {
-        return Commands.runOnce(() -> setMotorDutyCycle(0.8));
+        return Commands.runOnce(() -> setMotorDutyCycle(1.0));
     }
 
     public Command stopShooter() {

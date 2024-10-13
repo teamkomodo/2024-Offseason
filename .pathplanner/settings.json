@@ -4,7 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "3 Far Piece",
-    "6 Front Piece"
+    "6 Front Piece",
+    "New Folder",
+    "Preload stay"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.8,

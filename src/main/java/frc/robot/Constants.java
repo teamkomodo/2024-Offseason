@@ -49,9 +49,9 @@ public final class Constants {
     public static final int JOINT_ZERO_SWITCH_CHANNEL = 0;
 
     public static final double JOINT_STOW_POSITION = 0.0;
-    public static final double JOINT_SHOOTING_POSITION = 8.667;
+    public static final double JOINT_SHOOTING_POSITION = 9.367;
     public static final double JOINT_MIN_POSITION = 0.0;
-    public static final double JOINT_MAX_POSITION = 8.667;
+    public static final double JOINT_MAX_POSITION = 9.367;
 
     // Constants
 

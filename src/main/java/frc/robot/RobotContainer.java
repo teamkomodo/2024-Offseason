@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import frc.robot.commands.PreloadCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShootIntakeCommand;
+import frc.robot.commands.ShootStopCommand;
+import frc.robot.commands.StopIntakeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.JointSubsystem;
@@ -13,6 +17,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.util.BlinkinPattern;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -48,6 +53,7 @@ public class RobotContainer {
     public RobotContainer() {
         configureBindings();
         registerNamedCommands();
+
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }    
@@ -90,18 +96,20 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
-        intakeSubsystem.holdIntake();
-        jointSubsystem.zeroJointCommand();
+        Commands.runOnce(() -> {drivetrainSubsystem.zeroGyro();});
+        Commands.runOnce(() -> ledSubsystem.setFramePatternCommand(BlinkinPattern.COLOR_1_AND_2_PATTERN_SPARKLE_COLOR_2_ON_COLOR_1));
+        Commands.runOnce(() -> intakeSubsystem.noteLoaded = true);
+        Commands.runOnce(() -> intakeSubsystem.noteIntaked = true);
     }
     
     public Command getAutonomousCommand() {
-        return null;
-        // if(autoChooser != null) {
-        //    return autoChooser.getSelected();
-        // }
+        return AutoBuilder.followPath(PathPlannerPath.fromPathFile("3 piece"));
     }
 
     private void registerNamedCommands() {
-        
+        NamedCommands.registerCommand("ready", new PreloadCommand(intakeSubsystem, shooterSubsystem, jointSubsystem, drivetrainSubsystem));
+        NamedCommands.registerCommand("stopIntake", new StopIntakeCommand(intakeSubsystem, shooterSubsystem, jointSubsystem));
+        NamedCommands.registerCommand("shootAndIntake", new ShootIntakeCommand(intakeSubsystem, shooterSubsystem, jointSubsystem));
+        NamedCommands.registerCommand("shootAndStop", new ShootStopCommand(intakeSubsystem, shooterSubsystem, jointSubsystem));
     }
 }

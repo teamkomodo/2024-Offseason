@@ -8,13 +8,13 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.JointSubsystem;
 
-public class ShootCommand extends DynamicCommand {
+public class ShootIntakeCommand extends DynamicCommand {
 
     private final IntakeSubsystem intakeSubsystem;
     private final ShooterSubsystem shooterSubsystem;
     private final JointSubsystem jointSubsystem;
 
-    public ShootCommand(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, JointSubsystem jointSubsystem) {
+    public ShootIntakeCommand(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, JointSubsystem jointSubsystem) {
         
         this.intakeSubsystem = intakeSubsystem;
         this.shooterSubsystem = shooterSubsystem;
@@ -37,12 +37,10 @@ public class ShootCommand extends DynamicCommand {
             Commands.runOnce(() -> intakeSubsystem.setIntakeDutyCycle(0.5)),
             Commands.waitSeconds(1.2),
             Commands.runOnce(() -> intakeSubsystem.holdIntake()),
-            Commands.runOnce(() -> intakeSubsystem.noteLoaded = false),
-            Commands.runOnce(() -> intakeSubsystem.noteIntaked = false),
-            shooterSubsystem.stopShooter(),
             new WaitCommand(0.1),
             jointSubsystem.stowPositionCommand(),
-            jointSubsystem.zeroJointCommand()
+            jointSubsystem.zeroJointCommand(),
+            intakeSubsystem.intake()
         );
         // } else {
         //     return null;
