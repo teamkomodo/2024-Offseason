@@ -103,7 +103,7 @@ public class RobotContainer {
     }
     
     public Command getAutonomousCommand() {
-        return AutoBuilder.followPath(PathPlannerPath.fromPathFile("3 piece"));
+        return AutoBuilder.followPath(PathPlannerPath.fromPathFile("3piece"));
     }
 
     private void registerNamedCommands() {
