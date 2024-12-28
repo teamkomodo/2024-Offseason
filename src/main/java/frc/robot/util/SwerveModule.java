@@ -61,4 +61,20 @@ public interface SwerveModule {
      * @return A Rotation2d object representing the current rotation of the module.
      */
     public Rotation2d getAbsoluteModuleRotation();
+
+    /*
+     * Runs the drive motor at a specified voltage with the module rotated forward
+     * 
+     * @param voltage Voltage to run drive motor
+     */
+    public void runForward(double voltage);
+
+    /*
+     * Runs the steer motor at specified voltage with drive motor stopped
+     * 
+     * @param voltage Voltage to run steer motor
+     */
+    public void runRotation(double voltage);
+
+
 }

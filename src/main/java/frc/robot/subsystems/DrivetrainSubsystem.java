@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.util.FalconSwerveModule;
 import frc.robot.util.SwerveModule;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static frc.robot.Constants.*;
 
@@ -76,6 +78,26 @@ public class DrivetrainSubsystem implements Subsystem {
      * See https://docs.wpilib.org/en/stable/docs/software/advanced-controls/geometry/coordinate-systems.html#robot-coordinate-system
      * Forward is x+, Left is y+, counterclockwise is theta+
      */
+
+    private final SysIdRoutine driveSysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            (voltage) -> runDriveVolts(voltage.in(Units.Volts)),
+            null,
+            this
+        )
+    );
+
+    private final SysIdRoutine steerSysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            (voltage) -> runSteerVolts(voltage.in(Units.Volts)),
+            null,
+            this
+        )
+    );
+
+     
 
     private final Translation2d frontLeftPosition = new Translation2d(DRIVETRAIN_WIDTH / 2D, DRIVETRAIN_LENGTH / 2D); // All translations are relative to center of rotation
     private final Translation2d frontRightPosition = new Translation2d(DRIVETRAIN_WIDTH / 2D, -DRIVETRAIN_LENGTH / 2D);
@@ -404,5 +426,55 @@ public class DrivetrainSubsystem implements Subsystem {
             4 * Math.PI
         ));
     }
+
+
+    public Command driveSysIdRoutineCommand(){
+        return Commands.sequence(
+            driveSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withTimeout(7),
+            Commands.waitSeconds(2),
+            driveSysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(7),
+            Commands.waitSeconds(2),
+            driveSysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(2),
+            Commands.waitSeconds(2),
+            driveSysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(2),
+            Commands.waitSeconds(2)
+        );
+    }
+
+    public Command steerSysIdRoutineCommand() {
+        return Commands.sequence(
+            steerSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withTimeout(7),
+            Commands.waitSeconds(2),
+            steerSysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(7),
+            Commands.waitSeconds(2),
+            steerSysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(2),
+            Commands.waitSeconds(2),
+            steerSysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(2),
+            Commands.waitSeconds(2)
+        );
+    }
+
+
+
+    public void runDriveVolts(double voltage){
+        frontLeft.runForward(voltage);
+        frontRight.runForward(voltage);
+        backLeft.runForward(voltage);
+        backRight.runForward(voltage);
+    }
+
+    public void runSteerVolts(double voltage){
+        frontLeft.runRotation(voltage);
+        frontRight.runRotation(voltage);
+        backLeft.runRotation(voltage);
+        backRight.runRotation(voltage);
+    }
+
+
+
+
+
+
+   
     
 }

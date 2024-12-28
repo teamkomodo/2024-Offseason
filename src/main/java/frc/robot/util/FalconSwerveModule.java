@@ -153,4 +153,17 @@ public class FalconSwerveModule implements SwerveModule{
     private double getDriveVelocity() {
         return driveMotor.getVelocity().getValueAsDouble() * driveVelocityConversionFactor;
     }
+
+
+    public void runForward(double voltage){
+        driveMotor.setVoltage(voltage);
+        //idk if this is the same as set ref in crecendo code
+        steerMotor.set(0);
+    }
+
+
+    public void runRotation(double voltage){
+        driveMotor.set(0);
+        steerMotor.setVoltage(voltage);
+    }
 }
