@@ -42,7 +42,7 @@ public class LEDSubsystem extends SubsystemBase {
         );
     }
 
-    private Command flashRedCommand() {
+    public Command flashRedCommand() {
         return Commands.sequence(
             setTempFramePatternCommand(BlinkinPattern.SOLID_COLORS_RED).withTimeout(0.1),
             setTempFramePatternCommand(BlinkinPattern.SOLID_COLORS_BLACK).withTimeout(0.1),
@@ -56,7 +56,7 @@ public class LEDSubsystem extends SubsystemBase {
         );
     }
 
-    private Command flashBlueCommand() {
+    public Command flashBlueCommand() {
         return Commands.sequence(
             setTempFramePatternCommand(BlinkinPattern.SOLID_COLORS_BLUE).withTimeout(0.1),
             setTempFramePatternCommand(BlinkinPattern.SOLID_COLORS_BLACK).withTimeout(0.1),

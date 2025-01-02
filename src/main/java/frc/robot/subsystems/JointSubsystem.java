@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,8 +28,6 @@ public class JointSubsystem extends SubsystemBase {
     private final NetworkTable jointTable = NetworkTableInstance.getDefault().getTable("joint");
     private final DoublePublisher jointMotorPositionPublisher = jointTable.getDoubleTopic("motorPosition").publish();
     private final DoublePublisher jointMotorDutyCyclePublisher = jointTable.getDoubleTopic("motorDutyCycle").publish();
-    private final BooleanPublisher intakedPublisher = jointTable.getBooleanTopic("motorPosition").publish();
-    private final BooleanPublisher loadedPublisher = jointTable.getBooleanTopic("motorPosition").publish();
 
     private final CANSparkMax jointMotor;
     private final CANSparkMax jointMotor2;
@@ -42,8 +39,6 @@ public class JointSubsystem extends SubsystemBase {
     private boolean limitSwitch;
     private boolean limitSwitchAtLastCeck;
     private boolean zeroed = false;
-
-    private double jointMotorPosition = 0;
   
     public JointSubsystem() {
         jointMotor = new CANSparkMax(JOINT_MOTOR_1_ID, MotorType.kBrushless);
@@ -68,7 +63,7 @@ public class JointSubsystem extends SubsystemBase {
         
         jointPidController = jointMotor.getPIDController();
         Util.setPidController(jointPidController, jointPID);
-        setMotor(0, ControlType.kDutyCycle);
+        jointPidController.setReference(0, ControlType.kDutyCycle);
       }
   
     @Override
@@ -99,19 +94,19 @@ public class JointSubsystem extends SubsystemBase {
     }
 
     public void setMotorPosition(double position) {
-        setMotor(position, ControlType.kPosition);
+        jointPidController.setReference(position, ControlType.kPosition);
     }
     
     public void setMotorDutyCycle(double dutyCycle) {
-        setMotor(dutyCycle, ControlType.kDutyCycle);
+        jointPidController.setReference(dutyCycle, ControlType.kDutyCycle);
     }
 
     public void setMotorVelocity(double velocity) {
-        setMotor(velocity, ControlType.kVelocity);
+        jointPidController.setReference(velocity, ControlType.kVelocity);
     }
 
     public void holdMotorPosition() {
-        setMotor(jointEncoder.getPosition(), ControlType.kPosition);
+        jointPidController.setReference(jointEncoder.getPosition(), ControlType.kPosition);
     }
 
     public Command stowPositionCommand() {
@@ -124,13 +119,6 @@ public class JointSubsystem extends SubsystemBase {
 
     public Command zeroJointCommand() {
         return Commands.runEnd(() -> setMotorDutyCycle(-0.3), () -> setMotorDutyCycle(0), this).until(() -> (getLimitSwitch()));
-    }
-    
-    private void setMotor(double value, ControlType type) {
-        if (type == ControlType.kPosition) {
-            jointMotorPosition = value;
-        }
-        jointPidController.setReference(value, type);
     }
 
     public boolean getLimitSwitch() {

@@ -25,7 +25,6 @@ public class ShooterSubsystem extends SubsystemBase {
     
     private final NetworkTable shooterTable = NetworkTableInstance.getDefault().getTable("shooter");
     private final DoublePublisher motorSpeedPublisher = shooterTable.getDoubleTopic("motorSpeed").publish();
-    private final DoublePublisher motorPositionPublisher = shooterTable.getDoubleTopic("motorPosition").publish();
 
     private final CANSparkMax shooterMotor;
     private final SparkPIDController shooterPidController;
@@ -34,9 +33,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private PIDGains pid = new PIDGains(0.7, 0, 0.1, 0, 1, 0.00022, -1, 1);
 
-    private double motorSpeed = 0;
-    private double motorPosition = 0;
-  
     private double smoothCurrent = 0;
     private double filterConstant = 0.8;
     
@@ -56,7 +52,7 @@ public class ShooterSubsystem extends SubsystemBase {
         
         shooterPidController = shooterMotor.getPIDController();
         Util.setPidController(shooterPidController, pid);
-        setMotor(0, ControlType.kDutyCycle);
+        shooterPidController.setReference(0, ControlType.kDutyCycle);
     }
   
     @Override
@@ -66,12 +62,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   
     public void teleopInit() {
-        setMotor(0, ControlType.kDutyCycle);
+        shooterPidController.setReference(0, ControlType.kDutyCycle);
     }
 
     private void updateTable() {
         motorSpeedPublisher.set(shooterEncoder.getVelocity());
-        motorPositionPublisher.set(motorPosition);
     }
 
     private void updateCurrent() {
@@ -79,27 +74,19 @@ public class ShooterSubsystem extends SubsystemBase {
     }
  
     public void setMotorPosition(double position) {
-        setMotor(position, ControlType.kPosition);
+        shooterPidController.setReference(position, ControlType.kPosition);
     }
   
     public void setMotorDutyCycle(double dutyCycle) {
-        setMotor(dutyCycle, ControlType.kDutyCycle);
+        shooterPidController.setReference(dutyCycle, ControlType.kDutyCycle);
     }
   
     public void setMotorVelocity(double velocity) {
-        setMotor(velocity, ControlType.kVelocity);
+        shooterPidController.setReference(velocity, ControlType.kVelocity);
     }
   
     public void holdMotorPosition() {
-        setMotor(shooterEncoder.getPosition(), ControlType.kPosition);
-    }
-
-    private void setMotor(double value, ControlType type) {
-        if (type == ControlType.kDutyCycle || type == ControlType.kVelocity)
-            motorSpeed = value;
-        else if (type == ControlType.kPosition)
-            motorPosition = value;
-        shooterPidController.setReference(value, type);
+        shooterPidController.setReference(shooterEncoder.getPosition(), ControlType.kPosition);
     }
 
     public Command rampUpShooter() {
